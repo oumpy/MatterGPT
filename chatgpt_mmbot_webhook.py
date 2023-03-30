@@ -56,6 +56,12 @@ def webhook():
     # Get thread history
     thread_history = get_thread_history(post_id, args.max_thread_posts, args.mm_url, args.mm_port, args.mm_scheme)
 
+    # Get the post information
+    post_info = mm_driver.posts.get_post(post_id)
+
+    # Find the root_id of the thread
+    root_id = post_info["root_id"] if post_info["root_id"] else post_id
+
     # Build the messages list for the API call
     messages = [
         {"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI."},
@@ -86,7 +92,7 @@ def webhook():
     mm_driver.posts.create_post({
         'channel_id': channel_id,
         'message': generated_message,
-        'root_id': post_id,
+        'root_id': root_id,
     })
 
     return jsonify({}), 200
