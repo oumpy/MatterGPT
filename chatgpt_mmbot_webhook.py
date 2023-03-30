@@ -99,7 +99,7 @@ if __name__ == '__main__':
     parser.add_argument('--mm-port', type=int, default=443, help='Mattermost server port')
     parser.add_argument('--mm-scheme', default='https', help='Mattermost server scheme (http or https)')
     parser.add_argument('--webhook-port', type=int, default=5000, help='Webhook listening port')
-    parser.add_argument('--chat-gpt-model', default='chat-gpt-3.5-turbo', help='OpenAI ChatGPT model')
+    parser.add_argument('--chat-gpt-model', default='gpt-3.5-turbo', help='OpenAI ChatGPT model')
     parser.add_argument('--logfile', help='Path to log file (default: stdout)')
     parser.add_argument('--loglevel', default='INFO', help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
     parser.add_argument('--max-tokens', type=int, default=100, help='Maximum tokens for the generated text')
