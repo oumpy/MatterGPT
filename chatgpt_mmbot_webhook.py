@@ -3,6 +3,7 @@
 import os
 import argparse
 import logging
+import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from mattermostdriver import Driver
@@ -19,25 +20,20 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 # Set up OpenAI API
 OpenAI.api_key = OPENAI_API_KEY
 
-def get_thread_history(channel_id, post_id, max_thread_posts):
-    page = 0
+def get_thread_history(post_id, max_thread_posts):
+    url = f"{args.mattermost_scheme}://{args.mattermost_url}:{args.mattermost_port}/api/v4/posts/{post_id}/thread"
+    headers = {"Authorization": f"Bearer {MATTERMOST_BOT_TOKEN}"}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        raise Exception(f"Failed to get thread history: {response.status_code} - {response.text}")
+
+    thread_data = response.json()
+
     thread_history = []
-
-    while True:
-        remaining_posts = max_thread_posts - len(thread_history)
-        per_page = min(remaining_posts, 100)
-        posts = mm_driver.posts.get_posts_for_channel(channel_id, page=page, per_page=per_page)
-        found_post = False
-
-        for post in posts['posts'].values():
-            if post['root_id'] == post_id:
-                thread_history.append((post['user_id'], post['message']))
-                found_post = True
-
-        if found_post or len(posts['posts']) < per_page or len(thread_history) >= max_thread_posts:
-            break
-
-        page += 1
+    posts = sorted(thread_data["posts"].values(), key=lambda x: x['create_at'])
+    for post in posts[-max_thread_posts:]:
+        thread_history.append((post["user_id"], post["message"]))
 
     return thread_history
 
@@ -70,7 +66,7 @@ def webhook():
     message = data.get('text')
 
     # Get thread history
-    thread_history = get_thread_history(channel_id, post_id, args.max_thread_posts)
+    thread_history = get_thread_history(post_id, args.max_thread_posts)
 
     # Build the prompt
     prompt = build_prompt(thread_history, message, mm_bot_id)
