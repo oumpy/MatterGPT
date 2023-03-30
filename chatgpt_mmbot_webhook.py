@@ -12,7 +12,6 @@ load_dotenv()
 # Set up OpenAI API
 OpenAI.api_key = os.environ['OPENAI_API_KEY']
 
-
 def get_thread_history(channel_id, post_id):
     posts = mm_driver.posts.get_posts_for_channel(channel_id, since=post_id)
     thread_history = []
@@ -22,7 +21,6 @@ def get_thread_history(channel_id, post_id):
             thread_history.append((post['user_id'], post['message']))
 
     return thread_history
-
 
 def build_prompt(thread_history, message):
     conversation = ""
@@ -37,7 +35,6 @@ def build_prompt(thread_history, message):
 
     conversation += f"User: {message}"
     return conversation
-
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -62,10 +59,10 @@ def webhook():
     response = OpenAI.Completion.create(
         model=args.chat_gpt_model,
         prompt=prompt,
-        max_tokens=100,
+        max_tokens=args.max_tokens,
         n=1,
         stop=None,
-        temperature=0.5,
+        temperature=args.temperature,
     )
 
     reply = response.choices[0].text.strip()
@@ -79,7 +76,6 @@ def webhook():
 
     return jsonify({}), 200
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--mattermost-url', default='localhost', help='Mattermost server URL')
@@ -89,6 +85,8 @@ if __name__ == '__main__':
     parser.add_argument('--chat-gpt-model', default='chat-gpt-3.5-turbo', help='OpenAI ChatGPT model')
     parser.add_argument('--logfile', help='Path to log file (default: stdout)')
     parser.add_argument('--loglevel', default='INFO', help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
+    parser.add_argument('--max-tokens', type=int, default=100, help='Maximum tokens for the generated text')
+    parser.add_argument('--temperature', type=float, default=0.5, help='Temperature for the generated text (higher values make the output more diverse, lower values make it more conservative)')
     args = parser.parse_args()
 
     loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
