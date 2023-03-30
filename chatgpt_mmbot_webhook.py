@@ -20,8 +20,8 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 # Set up OpenAI API
 OpenAI.api_key = OPENAI_API_KEY
 
-def get_thread_history(post_id, max_thread_posts):
-    url = f"{args.mattermost_scheme}://{args.mattermost_url}:{args.mattermost_port}/api/v4/posts/{post_id}/thread"
+def get_thread_history(post_id, max_thread_posts, mattermost_url, mattermost_port, mattermost_scheme):
+    url = f"{mattermost_scheme}://{mattermost_url}:{mattermost_port}/api/v4/posts/{post_id}/thread"
     headers = {"Authorization": f"Bearer {MATTERMOST_BOT_TOKEN}"}
     response = requests.get(url, headers=headers)
 
@@ -66,7 +66,7 @@ def webhook():
     message = data.get('text')
 
     # Get thread history
-    thread_history = get_thread_history(post_id, args.max_thread_posts)
+    thread_history = get_thread_history(post_id, args.max_thread_posts, args.mattermost_url, args.mattermost_port, args.mattermost_scheme)
 
     # Build the prompt
     prompt = build_prompt(thread_history, message, mm_bot_id)
