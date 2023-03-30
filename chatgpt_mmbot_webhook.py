@@ -15,8 +15,15 @@ OpenAI.api_key = os.environ['OPENAI_API_KEY']
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
+    token = data.get('token')
+
+    # Verify the webhook token
+    if token != os.environ['OUTGOING_WEBHOOK_TOKEN']:
+        return jsonify({'error': 'Invalid token'}), 403
+
     text = data['text']
     channel_id = data['channel_id']
+    post_id = data['post_id']
 
     # Call OpenAI API
     response = OpenAI.Completion.create(
@@ -30,10 +37,11 @@ def webhook():
 
     reply = response.choices[0].text.strip()
 
-    # Send reply to Mattermost
+    # Send reply to Mattermost in a thread
     mm_driver.posts.create_post({
         'channel_id': channel_id,
-        'message': reply
+        'message': reply,
+        'root_id': post_id
     })
 
     return jsonify({}), 200
