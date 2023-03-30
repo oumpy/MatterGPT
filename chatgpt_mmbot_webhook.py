@@ -13,6 +13,32 @@ load_dotenv()
 OpenAI.api_key = os.environ['OPENAI_API_KEY']
 
 
+def get_thread_history(channel_id, post_id):
+    posts = mm_driver.posts.get_posts_for_channel(channel_id, since=post_id)
+    thread_history = []
+
+    for post in posts['posts'].values():
+        if post['root_id'] == post_id:
+            thread_history.append((post['user_id'], post['message']))
+
+    return thread_history
+
+
+def build_prompt(thread_history, message):
+    conversation = ""
+
+    for user_id, text in thread_history:
+        if user_id == os.environ['BOT_USER_ID']:
+            user = "ChatGPT"
+        else:
+            user = "User"
+
+        conversation += f"{user}: {text}\n"
+
+    conversation += f"User: {message}"
+    return conversation
+
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
@@ -26,10 +52,16 @@ def webhook():
     channel_id = data['channel_id']
     post_id = data['post_id']
 
+    # Get thread history
+    thread_history = get_thread_history(channel_id, post_id)
+
+    # Build the prompt
+    prompt = build_prompt(thread_history, text)
+
     # Call OpenAI API
     response = OpenAI.Completion.create(
         model=args.chat_gpt_model,
-        prompt=f"{text}",
+        prompt=prompt,
         max_tokens=100,
         n=1,
         stop=None,
@@ -71,5 +103,8 @@ if __name__ == '__main__':
     })
 
     mm_driver.login()
+
+    # Get bot user ID
+    os.environ['BOT_USER_ID'] = mm_driver.users.get_user('me')['id']
 
     app.run(host='0.0.0.0', port=args.webhook_port, debug=True)
