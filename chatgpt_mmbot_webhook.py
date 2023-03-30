@@ -11,23 +11,13 @@ load_dotenv()
 # Set up OpenAI API
 OpenAI.api_key = os.environ['OPENAI_API_KEY']
 
-# Set up Mattermost driver
-mm = Driver({
-    'url': os.environ['MATTERMOST_URL'],
-    'port': os.environ['MATTERMOST_PORT'],
-    'scheme': os.environ['MATTERMOST_SCHEME'],
-    'token': os.environ['BOT_USER_TOKEN'],
-})
-
-mm.login()
-
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
     text = data['text']
     channel_id = data['channel_id']
-    
+
     # Call OpenAI API
     response = OpenAI.Completion.create(
         engine=args.chat_gpt_model,
@@ -41,7 +31,7 @@ def webhook():
     reply = response.choices[0].text.strip()
 
     # Send reply to Mattermost
-    mm.posts.create_post({
+    mm_driver.posts.create_post({
         'channel_id': channel_id,
         'message': reply
     })
@@ -63,8 +53,14 @@ if __name__ == '__main__':
         import logging
         logging.basicConfig(filename=args.logfile, level=logging.INFO)
 
-    os.environ['MATTERMOST_URL'] = args.mattermost_url
-    os.environ['MATTERMOST_PORT'] = str(args.mattermost_port)
-    os.environ['MATTERMOST_SCHEME'] = args.mattermost_scheme
+    # Set up Mattermost driver
+    mm_driver = Driver({
+        'url': args.mattermost_url,
+        'port': args.mattermost_port,
+        'scheme': args.mattermost_scheme,
+        'token': os.environ['BOT_USER_TOKEN'],
+    })
+
+    mm_driver.login()
 
     app.run(host='0.0.0.0', port=args.webhook_port, debug=True)
