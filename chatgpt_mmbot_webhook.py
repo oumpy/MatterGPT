@@ -37,21 +37,9 @@ def get_thread_history(post_id, max_thread_posts, mattermost_url, mattermost_por
 
     return thread_history
 
-def build_prompt(thread_history, message, mm_bot_id):
-    messages = [
-        (mm_bot_id if user_id == mm_bot_id else "user", msg)
-        for user_id, msg in thread_history
-    ]
-    messages.append(("user", message))
-
-    chat_history = "".join([f"{user}: {msg}\n" for user, msg in messages])
-    prompt = f"{chat_history}ChatGPT:"
-    return prompt
-
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
-    logging.debug(f"Received event: {data}")
     token = data.get('token')
 
     if token != MATTERMOST_OUTGOING_WEBHOOK_TOKEN:
@@ -66,23 +54,33 @@ def webhook():
     message = data.get('text')
 
     # Get thread history
-    thread_history = get_thread_history(post_id, args.max_thread_posts, args.mm_url, args.mm_port, args.mm_scheme)
+    thread_history = get_thread_history(post_id, args.max_thread_posts)
 
-    # Build the prompt
-    prompt = build_prompt(thread_history, message, mm_bot_id)
+    # Build the messages list for the API call
+    messages = [
+        {"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI."},
+    ]
+
+    for (user, msg) in thread_history:
+        role = "user" if user != mm_bot_id else "assistant"
+        messages.append({"role": role, "content": msg})
+
+    # Add the incoming message from the user
+    messages.append({"role": "user", "content": message})
 
     # Generate a response using OpenAI API
-    response = OpenAI.Completion.create(
-        engine=args.chat_gpt_model,
-        prompt=prompt,
+    response = OpenAI.ChatCompletion.create(
+        model=args.chat_gpt_model,
+        messages=messages,
         max_tokens=args.max_tokens,
         temperature=args.temperature,
-        n=1,
-        stop=["\n"]
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
     )
 
     # Extract the generated message
-    generated_message = response.choices[0].text.strip()
+    generated_message = response.choices[0].message['content']
 
     # Post the generated message as a reply in the thread
     mm_driver.posts.create_post({
