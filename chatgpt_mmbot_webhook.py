@@ -28,7 +28,7 @@ def webhook():
 
     # Call OpenAI API
     response = OpenAI.Completion.create(
-        engine=args.chat_gpt_model,
+        model=args.chat_gpt_model,
         prompt=f"{text}",
         max_tokens=100,
         n=1,
