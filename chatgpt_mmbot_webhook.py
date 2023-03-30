@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import argparse
 import logging
@@ -9,8 +10,13 @@ from openai import OpenAI
 app = Flask(__name__)
 load_dotenv()
 
+# Load environment variables
+OUTGOING_WEBHOOK_TOKEN = os.environ['OUTGOING_WEBHOOK_TOKEN']
+BOT_USER_TOKEN = os.environ['BOT_USER_TOKEN']
+OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
+
 # Set up OpenAI API
-OpenAI.api_key = os.environ['OPENAI_API_KEY']
+OpenAI.api_key = OPENAI_API_KEY
 
 def get_thread_history(channel_id, post_id):
     posts = mm_driver.posts.get_posts_for_channel(channel_id, since=post_id)
@@ -22,56 +28,57 @@ def get_thread_history(channel_id, post_id):
 
     return thread_history
 
-def build_prompt(thread_history, message):
-    conversation = ""
+def build_prompt(thread_history, message, bot_user_id):
+    messages = [
+        (bot_user_id if user_id == bot_user_id else "user", msg)
+        for user_id, msg in thread_history
+    ]
+    messages.append(("user", message))
 
-    for user_id, text in thread_history:
-        if user_id == os.environ['BOT_USER_ID']:
-            user = "ChatGPT"
-        else:
-            user = "User"
-
-        conversation += f"{user}: {text}\n"
-
-    conversation += f"User: {message}"
-    return conversation
+    chat_history = "".join([f"{user}: {msg}\n" for user, msg in messages])
+    prompt = f"{chat_history}ChatGPT:"
+    return prompt
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
     token = data.get('token')
 
-    # Verify the webhook token
-    if token != os.environ['OUTGOING_WEBHOOK_TOKEN']:
-        return jsonify({'error': 'Invalid token'}), 403
+    if token != OUTGOING_WEBHOOK_TOKEN:
+        return jsonify({'text': 'Invalid token'}), 403
 
-    text = data['text']
-    channel_id = data['channel_id']
-    post_id = data['post_id']
+    user_id = data.get('user_id')
+    if user_id == bot_user_id:
+        return jsonify({}), 200
+
+    post_id = data.get('post_id')
+    channel_id = data.get('channel_id')
+    message = data.get('text')
 
     # Get thread history
     thread_history = get_thread_history(channel_id, post_id)
 
     # Build the prompt
-    prompt = build_prompt(thread_history, text)
+    prompt = build_prompt(thread_history, message, bot_user_id)
 
-    # Call OpenAI API
+    # Generate a response using OpenAI API
     response = OpenAI.Completion.create(
-        model=args.chat_gpt_model,
+        engine=args.chat_gpt_model,
         prompt=prompt,
         max_tokens=args.max_tokens,
-        n=1,
-        stop=None,
         temperature=args.temperature,
+        n=1,
+        stop=["\n"]
     )
 
-    reply = response.choices[0].text.strip()
+    # Extract the generated message
+    generated_message = response.choices[0].text.strip()
 
-    # Send reply to Mattermost in a thread
+    # Post the generated message as a reply in the thread
     mm_driver.posts.create_post({
         'channel_id': channel_id,
-        'message': reply,
-        'root_id': post_id
+        'message': generated_message,
+        'root_id': post_id,
     })
 
     return jsonify({}), 200
@@ -97,12 +104,12 @@ if __name__ == '__main__':
         'url': args.mattermost_url,
         'port': args.mattermost_port,
         'scheme': args.mattermost_scheme,
-        'token': os.environ['BOT_USER_TOKEN'],
+        'token': BOT_USER_TOKEN,
     })
 
     mm_driver.login()
 
     # Get bot user ID
-    os.environ['BOT_USER_ID'] = mm_driver.users.get_user('me')['id']
+    bot_user_id = mm_driver.users.get_user('me')['id']
 
     app.run(host='0.0.0.0', port=args.webhook_port, debug=True)
