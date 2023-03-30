@@ -86,9 +86,9 @@ def webhook():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mattermost-url', default='localhost', help='Mattermost server URL')
-    parser.add_argument('--mattermost-port', type=int, default=443, help='Mattermost server port')
-    parser.add_argument('--mattermost-scheme', default='https', help='Mattermost server scheme (http or https)')
+    parser.add_argument('--mm-url', default='localhost', help='Mattermost server URL')
+    parser.add_argument('--mm-port', type=int, default=443, help='Mattermost server port')
+    parser.add_argument('--mm-scheme', default='https', help='Mattermost server scheme (http or https)')
     parser.add_argument('--webhook-port', type=int, default=5000, help='Webhook listening port')
     parser.add_argument('--chat-gpt-model', default='chat-gpt-3.5-turbo', help='OpenAI ChatGPT model')
     parser.add_argument('--logfile', help='Path to log file (default: stdout)')
@@ -102,9 +102,9 @@ if __name__ == '__main__':
 
     # Set up Mattermost driver
     mm_driver = Driver({
-        'url': args.mattermost_url,
-        'port': args.mattermost_port,
-        'scheme': args.mattermost_scheme,
+        'url': args.mm_url,
+        'port': args.mm_port,
+        'scheme': args.mm_scheme,
         'token': MATTERMOST_BOT_TOKEN,
     })
 
