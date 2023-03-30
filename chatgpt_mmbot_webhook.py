@@ -66,7 +66,7 @@ def webhook():
     message = data.get('text')
 
     # Get thread history
-    thread_history = get_thread_history(post_id, args.max_thread_posts, args.mattermost_url, args.mattermost_port, args.mattermost_scheme)
+    thread_history = get_thread_history(post_id, args.max_thread_posts, args.mm_url, args.mm_port, args.mm_scheme)
 
     # Build the prompt
     prompt = build_prompt(thread_history, message, mm_bot_id)
