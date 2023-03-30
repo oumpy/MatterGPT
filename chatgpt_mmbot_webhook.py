@@ -1,5 +1,6 @@
 import os
 import argparse
+import logging
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from mattermostdriver import Driver
@@ -55,11 +56,11 @@ if __name__ == '__main__':
     parser.add_argument('--webhook-port', type=int, default=5000, help='Webhook listening port')
     parser.add_argument('--chat-gpt-model', default='chat-gpt-3.5-turbo', help='OpenAI ChatGPT model')
     parser.add_argument('--logfile', help='Path to log file (default: stdout)')
+    parser.add_argument('--loglevel', default='INFO', help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
     args = parser.parse_args()
 
-    if args.logfile:
-        import logging
-        logging.basicConfig(filename=args.logfile, level=logging.INFO)
+    loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
+    logging.basicConfig(filename=args.logfile, level=loglevel)
 
     # Set up Mattermost driver
     mm_driver = Driver({
