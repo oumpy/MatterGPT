@@ -109,6 +109,7 @@ if __name__ == '__main__':
     parser.add_argument('--max-tokens', type=int, default=100, help='Maximum tokens for the generated text')
     parser.add_argument('--temperature', type=float, default=0.5, help='Temperature for the generated text (higher values make the output more diverse, lower values make it more conservative)')
     parser.add_argument('--max-thread-posts', type=int, default=20, help='Maximum number of posts to fetch in a thread')
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode for Flask')
     args = parser.parse_args()
 
     loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
@@ -127,4 +128,4 @@ if __name__ == '__main__':
     # Get bot user ID
     mm_bot_id = mm_driver.users.get_user('me')['id']
 
-    app.run(host='0.0.0.0', port=args.webhook_port, debug=True)
+    app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
