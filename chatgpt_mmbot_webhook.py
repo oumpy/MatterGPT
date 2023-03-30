@@ -6,7 +6,7 @@ import logging
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from mattermostdriver import Driver
-from openai import OpenAI
+import openai as OpenAI
 
 app = Flask(__name__)
 load_dotenv()
