@@ -19,13 +19,25 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 # Set up OpenAI API
 OpenAI.api_key = OPENAI_API_KEY
 
-def get_thread_history(channel_id, post_id):
-    posts = mm_driver.posts.get_posts_for_channel(channel_id, since=post_id)
+def get_thread_history(channel_id, post_id, max_thread_posts):
+    page = 0
     thread_history = []
 
-    for post in posts['posts'].values():
-        if post['root_id'] == post_id:
-            thread_history.append((post['user_id'], post['message']))
+    while True:
+        remaining_posts = max_thread_posts - len(thread_history)
+        per_page = min(remaining_posts, 100)
+        posts = mm_driver.posts.get_posts_for_channel(channel_id, page=page, per_page=per_page)
+        found_post = False
+
+        for post in posts['posts'].values():
+            if post['root_id'] == post_id:
+                thread_history.append((post['user_id'], post['message']))
+                found_post = True
+
+        if found_post or len(posts['posts']) < per_page or len(thread_history) >= max_thread_posts:
+            break
+
+        page += 1
 
     return thread_history
 
@@ -58,7 +70,7 @@ def webhook():
     message = data.get('text')
 
     # Get thread history
-    thread_history = get_thread_history(channel_id, post_id)
+    thread_history = get_thread_history(channel_id, post_id, args.max_thread_posts)
 
     # Build the prompt
     prompt = build_prompt(thread_history, message, mm_bot_id)
@@ -96,6 +108,7 @@ if __name__ == '__main__':
     parser.add_argument('--loglevel', default='INFO', help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
     parser.add_argument('--max-tokens', type=int, default=100, help='Maximum tokens for the generated text')
     parser.add_argument('--temperature', type=float, default=0.5, help='Temperature for the generated text (higher values make the output more diverse, lower values make it more conservative)')
+    parser.add_argument('--max-thread-posts', type=int, default=20, help='Maximum number of posts to fetch in a thread')
     args = parser.parse_args()
 
     loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
