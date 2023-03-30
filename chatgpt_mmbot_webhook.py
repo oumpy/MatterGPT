@@ -54,7 +54,7 @@ def webhook():
     message = data.get('text')
 
     # Get thread history
-    thread_history = get_thread_history(post_id, args.max_thread_posts)
+    thread_history = get_thread_history(post_id, args.max_thread_posts, args.mm_url, args.mm_port, args.mm_scheme)
 
     # Build the messages list for the API call
     messages = [
