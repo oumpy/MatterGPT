@@ -43,6 +43,7 @@ def build_prompt(thread_history, message, mm_bot_id):
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
+    logging.debug(f"Received event: {data}")
     token = data.get('token')
 
     if token != MATTERMOST_OUTGOING_WEBHOOK_TOKEN:
