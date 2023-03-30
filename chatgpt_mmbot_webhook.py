@@ -76,7 +76,7 @@ def webhook():
 
     # Generate a response using OpenAI API
     response = OpenAI.ChatCompletion.create(
-        model=args.chat_gpt_model,
+        model=args.gpt_model,
         messages=messages,
         max_tokens=args.max_tokens,
         temperature=args.temperature,
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     parser.add_argument('--mm-port', type=int, default=443, help='Mattermost server port')
     parser.add_argument('--mm-scheme', default='https', help='Mattermost server scheme (http or https)')
     parser.add_argument('--webhook-port', type=int, default=5000, help='Webhook listening port')
-    parser.add_argument('--chat-gpt-model', default='gpt-3.5-turbo', help='OpenAI ChatGPT model')
+    parser.add_argument('--gpt-model', default='gpt-3.5-turbo', help='OpenAI ChatGPT model')
     parser.add_argument('--logfile', help='Path to log file (default: stdout)')
     parser.add_argument('--loglevel', default='INFO', help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
     parser.add_argument('--max-tokens', type=int, default=100, help='Maximum tokens for the generated text')
