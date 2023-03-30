@@ -12,8 +12,8 @@ app = Flask(__name__)
 load_dotenv()
 
 # Load environment variables
-OUTGOING_WEBHOOK_TOKEN = os.environ['OUTGOING_WEBHOOK_TOKEN']
-BOT_USER_TOKEN = os.environ['BOT_USER_TOKEN']
+MATTERMOST_OUTGOING_WEBHOOK_TOKEN = os.environ['MATTERMOST_OUTGOING_WEBHOOK_TOKEN']
+MATTERMOST_BOT_TOKEN = os.environ['MATTERMOST_BOT_TOKEN']
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
 # Set up OpenAI API
@@ -29,9 +29,9 @@ def get_thread_history(channel_id, post_id):
 
     return thread_history
 
-def build_prompt(thread_history, message, bot_user_id):
+def build_prompt(thread_history, message, mm_bot_id):
     messages = [
-        (bot_user_id if user_id == bot_user_id else "user", msg)
+        (mm_bot_id if user_id == mm_bot_id else "user", msg)
         for user_id, msg in thread_history
     ]
     messages.append(("user", message))
@@ -45,11 +45,11 @@ def webhook():
     data = request.json
     token = data.get('token')
 
-    if token != OUTGOING_WEBHOOK_TOKEN:
+    if token != MATTERMOST_OUTGOING_WEBHOOK_TOKEN:
         return jsonify({'text': 'Invalid token'}), 403
 
     user_id = data.get('user_id')
-    if user_id == bot_user_id:
+    if user_id == mm_bot_id:
         return jsonify({}), 200
 
     post_id = data.get('post_id')
@@ -60,7 +60,7 @@ def webhook():
     thread_history = get_thread_history(channel_id, post_id)
 
     # Build the prompt
-    prompt = build_prompt(thread_history, message, bot_user_id)
+    prompt = build_prompt(thread_history, message, mm_bot_id)
 
     # Generate a response using OpenAI API
     response = OpenAI.Completion.create(
@@ -105,12 +105,12 @@ if __name__ == '__main__':
         'url': args.mattermost_url,
         'port': args.mattermost_port,
         'scheme': args.mattermost_scheme,
-        'token': BOT_USER_TOKEN,
+        'token': MATTERMOST_BOT_TOKEN,
     })
 
     mm_driver.login()
 
     # Get bot user ID
-    bot_user_id = mm_driver.users.get_user('me')['id']
+    mm_bot_id = mm_driver.users.get_user('me')['id']
 
     app.run(host='0.0.0.0', port=args.webhook_port, debug=True)
