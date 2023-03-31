@@ -67,7 +67,6 @@ def webhook():
 
     post_id = data.get('post_id')
     channel_id = data.get('channel_id')
-    message = data.get('text')
 
     # Get thread history
     thread_history = get_thread_history(post_id, args.max_thread_posts, args.mm_url, args.mm_port, args.mm_scheme)
@@ -86,9 +85,6 @@ def webhook():
     for (user, msg) in thread_history:
         role = "user" if user != mm_bot_id else "assistant"
         messages.append({"role": role, "content": msg})
-
-    # Add the incoming message from the user
-    messages.append({"role": "user", "content": message})
 
     # Generate a response using OpenAI API
     response = OpenAI.ChatCompletion.create(
