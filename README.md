@@ -41,6 +41,7 @@ You can use command-line options to change the following settings:
 - `--max-tokens`: Maximum tokens for the generated text (default: 100)
 - `--temperature`: Temperature for the generated text (default: 0.5)
 - `--max-thread-posts`: Maximum number of posts to fetch in a thread (default: 20)
+- `--flush-logs`: Enable immediate flushing of logs. Note that enabling this option might reduce performance.
 
 For more information, run `python mattergpt.py --help`.
 

@@ -7,8 +7,10 @@
 # License: GNU General Public License v3
 
 import os
+import sys
 import argparse
 import logging
+import io
 import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
@@ -111,6 +113,14 @@ def webhook():
 
     return jsonify({}), 200
 
+def create_logging_stream(logfile, flush_logs):
+    if logfile:
+        log_stream = open(logfile, 'a', encoding='utf-8', buffering=1 if flush_logs else -1)
+    else:
+        log_stream = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', write_through=flush_logs)
+    
+    return log_stream
+
 if __name__ == '__main__':
     # Set up command line arguments
     parser = argparse.ArgumentParser()
@@ -125,11 +135,13 @@ if __name__ == '__main__':
     parser.add_argument('--temperature', type=float, default=0.5, help='Temperature for the generated text (higher values make the output more diverse, lower values make it more conservative)')
     parser.add_argument('--max-thread-posts', type=int, default=20, help='Maximum number of posts to fetch in a thread')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode for Flask')
+    parser.add_argument('--flush-logs', action='store_true', help='Enable immediate flushing of logs')
     args = parser.parse_args()
 
     # Set up logging
     loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
-    logging.basicConfig(filename=args.logfile, level=loglevel)
+    log_stream = create_logging_stream(args.logfile, args.flush_logs)
+    logging.basicConfig(stream=log_stream, level=loglevel)
 
     # Set up Mattermost driver
     mm_driver = Driver({
