@@ -1,0 +1,5 @@
+flask>=2.1.1
+python-dotenv>=0.19.2
+requests>=2.27.1
+openai>=0.27.0
+mattermostdriver>=7.2.0
