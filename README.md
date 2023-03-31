@@ -1,7 +1,7 @@
 # MatterGPT
 
 MatterGPT is a ChatGPT-based chatbot that works with Mattermost, engaging users in natural conversations, answering questions, and providing information.
-The code for this project was developed entirely by ChatGPT.
+The code (and also this README) for this project was developed entirely by ChatGPT.
 
 ## Prerequisites
 
