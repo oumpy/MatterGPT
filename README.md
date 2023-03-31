@@ -46,7 +46,8 @@ For more information, run `python mattergpt.py --help`.
 
 ## systemd Unit File Template
 
-A systemd unit file template named `mattergpt.service` is provided in the repository. Adjust the paths and other configurations as needed.
+A systemd unit file template named `mattergpt.service` is provided in the repository.
+Adjust the paths and other configurations as needed.
 
 ## Copyright & License
 
@@ -56,4 +57,5 @@ A systemd unit file template named `mattergpt.service` is provided in the reposi
 
 ## Disclaimer
 
-This project uses the ChatGPT API provided by OpenAI and assumes no responsibility for the use or results of the API. Compatibility with Mattermost is also not guaranteed. Use of this project is at your own risk.
+This project uses the ChatGPT API provided by OpenAI and assumes no responsibility for the use or results of the API.
+Compatibility with Mattermost is also not guaranteed. Use of this project is at your own risk.
