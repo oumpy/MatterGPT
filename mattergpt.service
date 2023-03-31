@@ -1,0 +1,15 @@
+[Unit]
+Description=MatterGPT Chatbot Service
+After=network.target
+
+[Service]
+Type=simple
+User=your_username
+WorkingDirectory=/path/to/your/mattergpt
+EnvironmentFile=/path/to/your/mattergpt/.env
+ExecStart=/usr/bin/python3 /path/to/your/mattergpt/mattergpt.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
