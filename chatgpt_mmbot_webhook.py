@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify
 from mattermostdriver import Driver
 import openai as OpenAI
 
+# Initialize Flask app
 app = Flask(__name__)
 load_dotenv()
 
@@ -21,6 +22,8 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 OpenAI.api_key = OPENAI_API_KEY
 
 def get_thread_history(post_id, max_thread_posts, mattermost_url, mattermost_port, mattermost_scheme):
+    """Fetch the message history of a thread in Mattermost."""
+
     url = f"{mattermost_scheme}://{mattermost_url}:{mattermost_port}/api/v4/posts/{post_id}/thread"
     headers = {"Authorization": f"Bearer {MATTERMOST_BOT_TOKEN}"}
     response = requests.get(url, headers=headers)
@@ -39,13 +42,18 @@ def get_thread_history(post_id, max_thread_posts, mattermost_url, mattermost_por
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    """Handle incoming webhook events from Mattermost."""
+
     data = request.json
     token = data.get('token')
 
+    # Verify the webhook token
     if token != MATTERMOST_OUTGOING_WEBHOOK_TOKEN:
         return jsonify({'text': 'Invalid token'}), 403
 
     user_id = data.get('user_id')
+
+    # Ignore messages from the bot itself
     if user_id == mm_bot_id:
         return jsonify({}), 200
 
@@ -98,6 +106,7 @@ def webhook():
     return jsonify({}), 200
 
 if __name__ == '__main__':
+    # Set up command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--mm-url', default='localhost', help='Mattermost server URL')
     parser.add_argument('--mm-port', type=int, default=443, help='Mattermost server port')
@@ -112,6 +121,7 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='Enable debug mode for Flask')
     args = parser.parse_args()
 
+    # Set up logging
     loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
     logging.basicConfig(filename=args.logfile, level=loglevel)
 
@@ -128,4 +138,5 @@ if __name__ == '__main__':
     # Get bot user ID
     mm_bot_id = mm_driver.users.get_user('me')['id']
 
+    # Run the Flask app
     app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
