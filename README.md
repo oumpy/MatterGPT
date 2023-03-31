@@ -30,7 +30,7 @@ OPENAI_API_KEY=your_openai_api_key
 2. Run the following command in the command line to start the webhook server:
 
 ```
-$ python main.py
+$ python mattergpt.py
 ```
 
 
@@ -40,16 +40,22 @@ $ python main.py
 
 You can use command-line options to change the following settings:
 
-- Mattermost server URL, port, and scheme
-- Webhook server port
-- OpenAI model to use
-- Log file path
-- Log level
-- Maximum tokens for the generated text
-- Temperature for the generated text (controls output diversity)
-- Maximum number of posts to fetch in a thread
+- `--mm-url`: Mattermost server URL (default: 'localhost')
+- `--mm-port`: Mattermost server port (default: 443)
+- `--mm-scheme`: Mattermost server scheme (default: 'https')
+- `--webhook-port`: Webhook listening port (default: 5000)
+- `--gpt-model`: OpenAI ChatGPT model (default: 'gpt-3.5-turbo')
+- `--logfile`: Path to log file (default: stdout)
+- `--loglevel`: Logging level (default: 'INFO')
+- `--max-tokens`: Maximum tokens for the generated text (default: 100)
+- `--temperature`: Temperature for the generated text (default: 0.5)
+- `--max-thread-posts`: Maximum number of posts to fetch in a thread (default: 20)
 
-For more information, run `python main.py --help`.
+For more information, run `python mattergpt.py --help`.
+
+## systemd Unit File Template
+
+A systemd unit file template named `mattergpt.service` is provided in the repository. Adjust the paths and other configurations as needed.
 
 ## Disclaimer
 
