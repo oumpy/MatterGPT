@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+# MatterGPT version: 1.0beta1
+# Author (copyright holder): AtamaokaC
+# Organization: Python Party of Osaka University Medical School, Japan
+# Entirely written by ChatGPT
+# Development year: 2023
+# License: GNU General Public License v3
+
 import os
 import argparse
 import logging
