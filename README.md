@@ -1,14 +1,7 @@
 # MatterGPT
 
 MatterGPT is a ChatGPT-based chatbot that works with Mattermost, engaging users in natural conversations, answering questions, and providing information.
-
-## Version Information
-
-- MatterGPT 1.0beta1
-- Development Year: 2023
-- Copyright Holder: AtamaokaC
-- Affiliation: Python Party of Osaka University Medical School, Japan
-- License: GNU General Public License v3
+The codes of this project are developped entirely by ChatGPT.
 
 ## Prerequisites
 
@@ -26,13 +19,11 @@ MATTERMOST_BOT_TOKEN=your_mattermost_bot_token
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-
 2. Run the following command in the command line to start the webhook server:
 
 ```
 $ python mattergpt.py
 ```
-
 
 3. Set up an Outgoing Webhook in Mattermost and specify the server URL (e.g., http://your_server_ip:5000/webhook).
 
@@ -56,6 +47,12 @@ For more information, run `python mattergpt.py --help`.
 ## systemd Unit File Template
 
 A systemd unit file template named `mattergpt.service` is provided in the repository. Adjust the paths and other configurations as needed.
+
+## Copyright & License
+
+- @2023 AtamaokaC  
+  Python Party of Osaka University Medical School, Japan
+- License: GNU General Public License v3
 
 ## Disclaimer
 
