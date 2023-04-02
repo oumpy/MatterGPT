@@ -7,6 +7,7 @@ Type=simple
 User=your_username
 WorkingDirectory=/path/to/your/mattergpt
 EnvironmentFile=/path/to/your/mattergpt/.env
+Environment="MATTERGPT_PRODUCTION=True"
 # ExecStart=/usr/bin/python3 /path/to/your/mattergpt/mattergpt.py
 ExecStart=/usr/bin/gunicorn -w 4 -b 0.0.0.0 mattergpt:app
 Restart=always
