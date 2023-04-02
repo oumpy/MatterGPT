@@ -117,8 +117,7 @@ def create_logging_stream(logfile, flush_logs):
     
     return log_stream
 
-if __name__ == '__main__':
-    # Set up command line arguments
+def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--mm-url', default='localhost', help='Mattermost server URL')
     parser.add_argument('--mm-port', type=int, default=443, help='Mattermost server port')
@@ -133,9 +132,9 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='Enable debug mode for Flask')
     parser.add_argument('--flush-logs', action='store_true', help='Enable immediate flushing of logs')
     parser.add_argument('--production', action='store_true', help='Use Gunicorn for production environment')
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    # Set up logging
+def configure_logging(args):
     loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
     log_stream = create_logging_stream(args.logfile, args.flush_logs)
     logging.basicConfig(
@@ -145,6 +144,11 @@ if __name__ == '__main__':
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
+app = Flask(__name__)
+
+if __name__ == '__main__':
+    args = parse_args()
+    configure_logging(args)
     # Set up Mattermost driver
     mm_driver = Driver({
         'url': args.mm_url,
