@@ -140,7 +140,7 @@ if __name__ == '__main__':
     logging.basicConfig(
         stream=log_stream,
         level=loglevel,
-        format="%(asctime)s - %(levelname)s - %(message)s",
+        format="[%(asctime)s] %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
