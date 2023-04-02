@@ -137,7 +137,12 @@ if __name__ == '__main__':
     # Set up logging
     loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
     log_stream = create_logging_stream(args.logfile, args.flush_logs)
-    logging.basicConfig(stream=log_stream, level=loglevel)
+    logging.basicConfig(
+        stream=log_stream,
+        level=loglevel,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
 
     # Set up Mattermost driver
     mm_driver = Driver({
