@@ -21,9 +21,16 @@ OPENAI_API_KEY=your_openai_api_key
 
 2. Run the following command in the command line to start the webhook server:
 
+For development and testing:
 ```
 $ python mattergpt.py
 ```
+
+For production:
+```
+$ gunicorn -w 4 -b 0.0.0.0:5000 mattergpt:app
+```
+
 
 3. Set up an Outgoing Webhook in Mattermost and specify the server URL (e.g., http://your_server_ip:5000/webhook).
 

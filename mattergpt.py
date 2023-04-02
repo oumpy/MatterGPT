@@ -132,6 +132,7 @@ if __name__ == '__main__':
     parser.add_argument('--max-thread-posts', type=int, default=20, help='Maximum number of posts to fetch in a thread')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode for Flask')
     parser.add_argument('--flush-logs', action='store_true', help='Enable immediate flushing of logs')
+    parser.add_argument('--production', action='store_true', help='Use Gunicorn for production environment')
     args = parser.parse_args()
 
     # Set up logging
@@ -158,4 +159,7 @@ if __name__ == '__main__':
     mm_bot_id = mm_driver.users.get_user('me')['id']
 
     # Run the Flask app
-    app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
+    if args.production:
+        os.system(f"gunicorn --bind 0.0.0.0:{args.webhook_port} mattergpt:app")
+    else:
+        app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
