@@ -28,9 +28,21 @@ $ python mattergpt.py
 
 For production:
 ```
-$ gunicorn -w 4 -b 0.0.0.0:5000 mattergpt:app
+$ export FLASK_APP=mattergpt.py
+$ export MATTERGPT_ENV=production
+$ export MATTERGPT_MM_URL=your_mattermost_url
+$ export MATTERGPT_MM_PORT=your_mattermost_port
+$ export MATTERGPT_MM_SCHEME=your_mattermost_scheme
+$ export MATTERGPT_WEBHOOK_PORT=your_webhook_port
+$ export MATTERGPT_GPT_MODEL=your_gpt_model
+$ export MATTERGPT_LOGFILE=your_logfile_path
+$ export MATTERGPT_LOGLEVEL=your_loglevel
+$ export MATTERGPT_MAX_TOKENS=your_max_tokens
+$ export MATTERGPT_TEMPERATURE=your_temperature
+$ export MATTERGPT_MAX_THREAD_POSTS=your_max_thread_posts
+$ export MATTERGPT_FLUSH_LOGS=your_flush_logs
+$ gunicorn -w 4 -b 0.0.0.0 mattergpt:app
 ```
-
 
 3. Set up an Outgoing Webhook in Mattermost and specify the server URL (e.g., http://your_server_ip:5000/webhook).
 
@@ -49,6 +61,7 @@ You can use command-line options to change the following settings:
 - `--temperature`: Temperature for the generated text (default: 0.5)
 - `--max-thread-posts`: Maximum number of posts to fetch in a thread (default: 20)
 - `--flush-logs`: Enable immediate flushing of logs. Note that enabling this option might reduce performance.
+- `--production`: Enable production mode (default: False). Use this option when running the script with Gunicorn for better performance and stability in production environments.
 
 For more information, run `python mattergpt.py --help`.
 
