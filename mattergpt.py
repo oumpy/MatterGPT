@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument('--gpt-model', default=os.environ.get('MATTERGPT_GPT_MODEL', 'gpt-3.5-turbo'), help='OpenAI ChatGPT model')
     parser.add_argument('--logfile', default=os.environ.get('MATTERGPT_LOGFILE', None), help='Path to log file (default: stdout)')
     parser.add_argument('--loglevel', default=os.environ.get('MATTERGPT_LOGLEVEL', 'INFO'), help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
-    parser.add_argument('--max-tokens', type=int, default=os.environ.get('MATTERGPT_MAX_TOKENS', 100), help='Maximum tokens for the generated text')
+    parser.add_argument('--max-tokens', type=int, default=os.environ.get('MATTERGPT_MAX_TOKENS', 1000), help='Maximum tokens for the generated text')
     parser.add_argument('--temperature', type=float, default=os.environ.get('MATTERGPT_TEMPERATURE', 0.5), help='Temperature for the generated text (higher values make the output more diverse, lower values make it more conservative)')
     parser.add_argument('--max-thread-posts', type=int, default=os.environ.get('MATTERGPT_MAX_THREAD_POSTS', 20), help='Maximum number of posts to fetch in a thread')
     parser.add_argument('--debug', action='store_true', default=bool(int(os.environ.get('MATTERGPT_DEBUG', 0))), help='Enable debug mode for Flask')
