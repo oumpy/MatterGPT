@@ -195,17 +195,21 @@ def create_app():
 
     return app
 
-args = parse_args()
-configure_logging(args)
-mm_driver = init_mattermost_driver(args)
-mm_bot_id = mm_driver.users.get_user('me')['id']
-
 if __name__ == "__main__":
     load_dotenv()
+    args = parse_args()
+    configure_logging(args)
+    mm_driver = init_mattermost_driver(args)
+    mm_bot_id = mm_driver.users.get_user('me')['id']
     if args.gunicorn_path:
-        os.system(f"{args.gunicorn_path} --workers {args.workers} --bind 0.0.0.0:{args.webhook_port} mattergpt:app")
+        os.system(f"{args.gunicorn_path} --workers {args.workers} --bind '0.0.0.0:{args.webhook_port}' mattergpt:app")
     else:
         app = create_app()
         app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
-else:
+elif __name__ == "mattergpt":
+    sys.argv = ['mattergpt']
+    args = parse_args()
+    configure_logging(args)
+    mm_driver = init_mattermost_driver(args)
+    mm_bot_id = mm_driver.users.get_user('me')['id']
     app = create_app()
