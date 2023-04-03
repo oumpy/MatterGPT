@@ -17,10 +17,6 @@ from flask import Flask, request, jsonify
 from mattermostdriver import Driver
 import openai as OpenAI
 
-# Initialize Flask app
-app = Flask(__name__)
-load_dotenv()
-
 # Load environment variables
 MATTERMOST_OUTGOING_WEBHOOK_TOKEN = os.environ['MATTERMOST_OUTGOING_WEBHOOK_TOKEN']
 MATTERMOST_BOT_TOKEN = os.environ['MATTERMOST_BOT_TOKEN']
@@ -182,9 +178,10 @@ configure_logging(args)
 mm_driver = init_mattermost_driver(args)
 mm_bot_id = mm_driver.users.get_user('me')['id']
 
-if __name__ == '__main__':
-    if args.production:
-        os.system(f"gunicorn --workers {args.workers} --bind 0.0.0.0:{args.webhook_port} mattergpt:app")
+if __name__ == "__main__":
+    load_dotenv()
+    if args.gunicorn_path:
+        os.system(f"{args.gunicorn_path} --workers {args.workers} --bind 0.0.0.0:{args.webhook_port} mattergpt:app")
     else:
         app = create_app()
         app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
