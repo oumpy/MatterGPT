@@ -15,6 +15,7 @@ import io
 import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
+from tokenizers import Tokenizer, models, pre_tokenizers, decoders, processors
 from mattermostdriver import Driver
 import openai as OpenAI
 
@@ -105,6 +106,14 @@ def configure_logging(args):
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
+def tokenize(text):
+    tokenizer = Tokenizer(models.BPE.empty())
+    tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
+    tokenizer.decoder = decoders.ByteLevel()
+    tokenizer.post_processor = processors.ByteLevel(trim_offsets=True)
+
+    return tokenizer.encode(text).tokens
+
 def get_thread_history(post_id, max_thread_posts, max_thread_tokens, mattermost_url, mattermost_port, mattermost_scheme):
     """Fetch the message history of a thread in Mattermost."""
 
@@ -119,18 +128,15 @@ def get_thread_history(post_id, max_thread_posts, max_thread_tokens, mattermost_
 
     thread_history = []
     posts = sorted(thread_data["posts"].values(), key=lambda x: x['create_at'])
-    posts_to_consider = posts[-max_thread_posts:]
-
-    total_tokens = 0
-    for post in reversed(posts_to_consider):
-        message_tokens = len(post["message"].split())
-        total_tokens += message_tokens
-        if total_tokens <= max_thread_tokens:
+    accumulated_tokens = 0
+    for post in reversed(posts):
+        message_tokens = len(tokenize(post["message"]))
+        if accumulated_tokens + message_tokens <= max_thread_tokens:
             thread_history.append((post["user_id"], post["message"]))
+            accumulated_tokens += message_tokens
         else:
             break
 
-    # Reverse the order of the truncated thread history to maintain chronological order
     thread_history.reverse()
 
     return thread_history
