@@ -8,6 +8,7 @@
 
 import os
 import sys
+import subprocess
 import argparse
 import logging
 import io
@@ -204,7 +205,7 @@ if __name__ == "__main__":
     mm_driver = init_mattermost_driver(args)
     mm_bot_id = mm_driver.users.get_user('me')['id']
     if args.gunicorn_path:
-        os.system(f"{args.gunicorn_path} --workers {args.workers} --timeout {args.timeout} --bind '0.0.0.0:{args.webhook_port}' mattergpt:app")
+        subprocess.run([args.gunicorn_path, "--workers", str(args.workers), "--timeout", str(args.timeout), "--bind", f"0.0.0.0:{args.webhook_port}", "mattergpt:app"])
     else:
         app = create_app()
         app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
