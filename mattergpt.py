@@ -38,6 +38,7 @@ def parse_args():
     parser.add_argument('--max-tokens', type=int, default=os.environ.get('MATTERGPT_MAX_TOKENS', 1000), help='Maximum tokens for the generated text')
     parser.add_argument('--temperature', type=float, default=os.environ.get('MATTERGPT_TEMPERATURE', 0.5), help='Temperature for the generated text (higher values make the output more diverse, lower values make it more conservative)')
     parser.add_argument('--max-thread-posts', type=int, default=os.environ.get('MATTERGPT_MAX_THREAD_POSTS', 20), help='Maximum number of posts to fetch in a thread')
+    parser.add_argument('--max-thread-tokens', type=int, default=os.environ.get('MATTERGPT_MAX_THREAD_TOKENS', 4096), help='Maximum tokens to include from the thread history')
     parser.add_argument('--debug', action='store_true', default=str(os.environ.get('MATTERGPT_DEBUG', 'false')).lower() == 'true', help='Enable debug mode')
     parser.add_argument('--flush-logs', action='store_true', default=os.environ.get('MATTERGPT_FLUSH_LOGS', 'false').lower() == 'true', help='Enable immediate flushing of logs')
     parser.add_argument('--gunicorn-path', default=os.environ.get('MATTERGPT_GUNICORN_PATH'), help='Path to Gunicorn executable (if not provided, Flask built-in server will be used)')
@@ -55,6 +56,7 @@ def parse_args():
     os.environ['MATTERGPT_MAX_TOKENS'] = str(args.max_tokens)
     os.environ['MATTERGPT_TEMPERATURE'] = str(args.temperature)
     os.environ['MATTERGPT_MAX_THREAD_POSTS'] = str(args.max_thread_posts)
+    os.environ['MATTERGPT_MAX_THREAD_TOKENS'] = str(args.max_thread_tokens)
     os.environ['MATTERGPT_DEBUG'] = str(int(args.debug))
     os.environ['MATTERGPT_FLUSH_LOGS'] = str(int(args.flush_logs))
     os.environ['MATTERGPT_GUNICORN_PATH'] = args.gunicorn_path if args.gunicorn_path else ''
@@ -103,7 +105,7 @@ def configure_logging(args):
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
-def get_thread_history(post_id, max_thread_posts, mattermost_url, mattermost_port, mattermost_scheme):
+def get_thread_history(post_id, max_thread_posts, max_thread_tokens, mattermost_url, mattermost_port, mattermost_scheme):
     """Fetch the message history of a thread in Mattermost."""
 
     url = f"{mattermost_scheme}://{mattermost_url}:{mattermost_port}/api/v4/posts/{post_id}/thread"
@@ -117,8 +119,19 @@ def get_thread_history(post_id, max_thread_posts, mattermost_url, mattermost_por
 
     thread_history = []
     posts = sorted(thread_data["posts"].values(), key=lambda x: x['create_at'])
-    for post in posts[-max_thread_posts:]:
-        thread_history.append((post["user_id"], post["message"]))
+    posts_to_consider = posts[-max_thread_posts:]
+
+    total_tokens = 0
+    for post in reversed(posts_to_consider):
+        message_tokens = len(post["message"].split())
+        total_tokens += message_tokens
+        if total_tokens <= max_thread_tokens:
+            thread_history.append((post["user_id"], post["message"]))
+        else:
+            break
+
+    # Reverse the order of the truncated thread history to maintain chronological order
+    thread_history.reverse()
 
     return thread_history
 
@@ -138,6 +151,7 @@ def create_app():
     @app.route('/webhook', methods=['POST'])
     def webhook():
         """Handle incoming webhook events from Mattermost."""
+        logging.debug(f"Webhook received: {request.json}")
 
         data = request.json
         token = data.get('token')
@@ -156,7 +170,7 @@ def create_app():
         channel_id = data.get('channel_id')
 
         # Get thread history
-        thread_history = get_thread_history(post_id, args.max_thread_posts, args.mm_url, args.mm_port, args.mm_scheme)
+        thread_history = get_thread_history(post_id, args.max_thread_posts, args.max_thread_tokens, args.mm_url, args.mm_port, args.mm_scheme)
 
         # Get the post information
         post_info = mm_driver.posts.get_post(post_id)
