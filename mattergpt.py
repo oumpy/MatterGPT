@@ -41,6 +41,7 @@ def parse_args():
     parser.add_argument('--flush-logs', action='store_true', default=os.environ.get('MATTERGPT_FLUSH_LOGS', 'false').lower() == 'true', help='Enable immediate flushing of logs')
     parser.add_argument('--gunicorn-path', default=os.environ.get('MATTERGPT_GUNICORN_PATH'), help='Path to Gunicorn executable (if not provided, Flask built-in server will be used)')
     parser.add_argument('--workers', type=int, default=os.environ.get('MATTERGPT_WORKERS', 1), help='Number of Gunicorn worker processes (only applicable if using Gunicorn)')
+    parser.add_argument('--timeout', type=int, default=os.environ.get('MATTERGPT_TIMEOUT', 30), help='Gunicorn timeout value in seconds (only applicable if using Gunicorn)')
     args = parser.parse_args()
 
     os.environ['MATTERGPT_MM_URL'] = args.mm_url
@@ -57,6 +58,7 @@ def parse_args():
     os.environ['MATTERGPT_FLUSH_LOGS'] = str(int(args.flush_logs))
     os.environ['MATTERGPT_GUNICORN_PATH'] = args.gunicorn_path if args.gunicorn_path else ''
     os.environ['MATTERGPT_WORKERS'] = str(args.workers)
+    os.environ['MATTERGPT_TIMEOUT'] = str(args.timeout)
 
     return args
 
@@ -202,7 +204,7 @@ if __name__ == "__main__":
     mm_driver = init_mattermost_driver(args)
     mm_bot_id = mm_driver.users.get_user('me')['id']
     if args.gunicorn_path:
-        os.system(f"{args.gunicorn_path} --workers {args.workers} --bind '0.0.0.0:{args.webhook_port}' mattergpt:app")
+        os.system(f"{args.gunicorn_path} --workers {args.workers} --timeout {args.timeout} --bind '0.0.0.0:{args.webhook_port}' mattergpt:app")
     else:
         app = create_app()
         app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
