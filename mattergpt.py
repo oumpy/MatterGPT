@@ -6,6 +6,7 @@
 # Python Party of Osaka University Medical School, Japan
 # License: GNU General Public License v3
 
+import re
 import os
 import sys
 import subprocess
@@ -108,6 +109,20 @@ def configure_logging(args):
 def tokenize(text):
     tokens = list(text)
     return tokens
+
+def estimate_token_count(text):
+    """
+    Estimate the number of tokens in the given text.
+    This is a simple approximation and may not be accurate for all languages.
+    """
+    # 英語や他の言語の単語をマッチさせる正規表現
+    word_pattern = re.compile(r'\w+|\S')
+
+    # 正規表現を使ってテキスト内の単語を見つける
+    words = word_pattern.findall(text)
+
+    # 見つかった単語の数を返す
+    return len(words)
 
 def get_thread_history(post_id, max_thread_posts, max_thread_tokens, mattermost_url, mattermost_port, mattermost_scheme):
     """Fetch the message history of a thread in Mattermost."""
