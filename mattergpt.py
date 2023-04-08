@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from mattermostdriver import Driver
 import openai as OpenAI
-from openai.api_errors import OpenAIError
+from openai.error import OpenAIError
 
 
 # Load environment variables
