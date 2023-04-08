@@ -225,7 +225,8 @@ def create_app():
             messages.append({"role": role, "content": msg})
 
         # Generate a response using OpenAI API
-        while True:
+        retry = True
+        while retry:
             try:
                 # Generate a response using OpenAI API
                 response = OpenAI.ChatCompletion.create(
@@ -237,15 +238,13 @@ def create_app():
                     frequency_penalty=0,
                     presence_penalty=0,
                 )
-                break
+                retry = False
             except OpenAIError as e:
-                if 'too many tokens' in str(e):
-                    if len(messages) > 1:
-                        messages.pop(1)  # Remove the oldest non-system message
-                    else:
-                        return jsonify({'text': 'Error: message too long for GPT model'}), 400
+                if e.error.get('code') == 'context_length_exceeded':
+                    # Remove the oldest message and try again
+                    messages.pop(1)
                 else:
-                    return jsonify({'text': f'Error: {str(e)}'}), 500
+                    raise e
 
         # Extract the generated message
         generated_message = response.choices[0].message['content']
