@@ -173,14 +173,25 @@ def create_app():
         post_id = data.get('post_id')
         channel_id = data.get('channel_id')
 
-        # Get thread history
-        thread_history = get_thread_history(post_id, args.max_thread_posts, args.max_thread_tokens, args.mm_url, args.mm_port, args.mm_scheme)
-
         # Get the post information
         post_info = mm_driver.posts.get_post(post_id)
 
         # Find the root_id of the thread
         root_id = post_info["root_id"] if post_info["root_id"] else post_id
+
+        # Get thread history
+        thread_history = get_thread_history(root_id, args.max_thread_posts, args.max_thread_tokens, args.mm_url, args.mm_port, args.mm_scheme)
+
+        # Calculate the estimated tokens for the current thread
+        estimated_thread_tokens = sum(estimate_token_count(msg) for _, msg in thread_history)
+
+        # Set buffer tokens to be equal to max_tokens
+        buffer_tokens = args.max_tokens
+
+        # Reduce thread_history if necessary
+        while estimated_thread_tokens + buffer_tokens > args.max_thread_tokens and len(thread_history) > 0:
+            removed_user, removed_message = thread_history.pop(0)
+            estimated_thread_tokens -= estimate_token_count(removed_message)
 
         # Build the messages list for the API call
         messages = [
