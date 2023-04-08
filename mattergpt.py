@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from mattermostdriver import Driver
 import openai as OpenAI
+from openai.errors import OpenAIError
+
 
 # Load environment variables
 MATTERMOST_OUTGOING_WEBHOOK_TOKEN = os.environ['MATTERMOST_OUTGOING_WEBHOOK_TOKEN']
@@ -223,15 +225,27 @@ def create_app():
             messages.append({"role": role, "content": msg})
 
         # Generate a response using OpenAI API
-        response = OpenAI.ChatCompletion.create(
-            model=args.gpt_model,
-            messages=messages,
-            max_tokens=args.max_tokens,
-            temperature=args.temperature,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
-        )
+        while True:
+            try:
+                # Generate a response using OpenAI API
+                response = OpenAI.ChatCompletion.create(
+                    model=args.gpt_model,
+                    messages=messages,
+                    max_tokens=args.max_tokens,
+                    temperature=args.temperature,
+                    top_p=1,
+                    frequency_penalty=0,
+                    presence_penalty=0,
+                )
+                break
+            except OpenAIError as e:
+                if 'too many tokens' in str(e):
+                    if len(messages) > 1:
+                        messages.pop(1)  # Remove the oldest non-system message
+                    else:
+                        return jsonify({'text': 'Error: message too long for GPT model'}), 400
+                else:
+                    return jsonify({'text': f'Error: {str(e)}'}), 500
 
         # Extract the generated message
         generated_message = response.choices[0].message['content']
