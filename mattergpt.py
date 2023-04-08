@@ -15,7 +15,7 @@ import logging
 import io
 import requests
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from mattermostdriver import Driver
 import openai as OpenAI
 from openai.error import OpenAIError
@@ -178,14 +178,19 @@ def init_mattermost_driver(args):
     mm_driver.login()
     return mm_driver
 
-def create_app():
+def create_app(args):
     app = Flask(__name__)
+
+    @app.before_request
+    def store_args():
+        g.args = args
 
     @app.route('/webhook', methods=['POST'])
     def webhook():
         """Handle incoming webhook events from Mattermost."""
         logging.debug(f"Webhook received: {request.json}")
 
+        args = g.args
         data = request.json
         token = data.get('token')
 
@@ -277,7 +282,7 @@ if __name__ == "__main__":
     if args.gunicorn_path:
         subprocess.run([args.gunicorn_path, "--workers", str(args.workers), "--timeout", str(args.timeout), "--bind", f"0.0.0.0:{args.webhook_port}", "mattergpt:app"])
     else:
-        app = create_app()
+        app = create_app(args)
         app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
 elif __name__ == "mattergpt":
     sys.argv = ['mattergpt']
@@ -285,4 +290,4 @@ elif __name__ == "mattergpt":
     configure_logging(args)
     mm_driver = init_mattermost_driver(args)
     mm_bot_id = mm_driver.users.get_user('me')['id']
-    app = create_app()
+    app = create_app(args)
