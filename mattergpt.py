@@ -37,10 +37,16 @@ def parse_args():
     parser.add_argument('--webhook-port', type=int, default=os.environ.get('MATTERGPT_WEBHOOK_PORT', 5000), help='Webhook listening port')
     parser.add_argument('--gpt-model', default=os.environ.get('MATTERGPT_GPT_MODEL', 'gpt-3.5-turbo'), help='OpenAI ChatGPT model')
     parser.add_argument(
-        "--system-message",
+        '--system-message',
         type=str,
-        default=os.environ.get("MATTERGPT_SYSTEM_MESSAGE", "You are ChatGPT, a large language model trained by OpenAI."),
-        help="The system message to include at the beginning of the conversation (default: %(default)s)",
+        default=os.environ.get('MATTERGPT_SYSTEM_MESSAGE', 'You are ChatGPT, a large language model trained by OpenAI.'),
+        help='The system message to include at the beginning of the conversation (default: %(default)s)',
+    )
+    parser.add_argument(
+        '--additional-message',
+        type=str,
+        default=os.environ.get('MATTERGPT_ADDITIONAL_MESSAGE', ''),
+        help='An additional message to include at the beginning of the conversation (default: %(default)s)',
     )
     parser.add_argument('--logfile', default=os.environ.get('MATTERGPT_LOGFILE', None), help='Path to log file (default: stdout)')
     parser.add_argument('--loglevel', default=os.environ.get('MATTERGPT_LOGLEVEL', 'INFO'), help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
@@ -61,6 +67,7 @@ def parse_args():
     os.environ['MATTERGPT_WEBHOOK_PORT'] = str(args.webhook_port)
     os.environ['MATTERGPT_GPT_MODEL'] = args.gpt_model
     os.environ["MATTERGPT_SYSTEM_MESSAGE"] = args.system_message
+    os.environ['MATTERGPT_ADDITIONAL_MESSAGE'] = args.additional_message
     os.environ['MATTERGPT_LOGFILE'] = args.logfile if args.logfile else ''
     os.environ['MATTERGPT_LOGLEVEL'] = args.loglevel
     os.environ['MATTERGPT_MAX_TOKENS'] = str(args.max_tokens)
@@ -213,11 +220,17 @@ def create_app(args):
         # Find the root_id of the thread
         root_id = post_info["root_id"] if post_info["root_id"] else post_id
 
+        # Calculate tokens for additional_message
+        additional_message_tokens = estimate_token_count(args.additional_message)
+
         # Get thread history
-        thread_history = get_thread_history(root_id, args.max_thread_posts, args.max_thread_tokens, args.mm_url, args.mm_port, args.mm_scheme)
+        thread_history = get_thread_history(root_id, args.max_thread_posts, args.max_thread_tokens - args.max_tokens - additional_message_tokens, args.mm_url, args.mm_port, args.mm_scheme)
 
         # Calculate the estimated tokens for the current thread
         estimated_thread_tokens = sum(estimate_token_count(msg) for _, msg in thread_history)
+
+        # Add the additional_message tokens
+        estimated_thread_tokens += additional_message_tokens
 
         # Set buffer tokens to be equal to max_tokens
         buffer_tokens = args.max_tokens
@@ -235,6 +248,9 @@ def create_app(args):
         for (user, msg) in thread_history:
             role = "user" if user != mm_bot_id else "assistant"
             messages.append({"role": role, "content": msg})
+
+        # Add additional_message
+        messages[-1]['content'] += f'\n{args.additional_message}'
 
         # Generate a response using OpenAI API
         retry = True
