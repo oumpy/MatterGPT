@@ -39,7 +39,7 @@ def parse_args():
     parser.add_argument(
         "--system-message",
         type=str,
-        default=os.environ.get("MATTERMOST_GPT_SYSTEM_MESSAGE", "You are ChatGPT, a large language model trained by OpenAI."),
+        default=os.environ.get("MATTERGPT_SYSTEM_MESSAGE", "You are ChatGPT, a large language model trained by OpenAI."),
         help="The system message to include at the beginning of the conversation (default: %(default)s)",
     )
     parser.add_argument('--logfile', default=os.environ.get('MATTERGPT_LOGFILE', None), help='Path to log file (default: stdout)')
@@ -60,7 +60,7 @@ def parse_args():
     os.environ['MATTERGPT_MM_SCHEME'] = args.mm_scheme
     os.environ['MATTERGPT_WEBHOOK_PORT'] = str(args.webhook_port)
     os.environ['MATTERGPT_GPT_MODEL'] = args.gpt_model
-    os.environ["MATTERMOST_GPT_SYSTEM_MESSAGE"] = args.system_message
+    os.environ["MATTERGPT_SYSTEM_MESSAGE"] = args.system_message
     os.environ['MATTERGPT_LOGFILE'] = args.logfile if args.logfile else ''
     os.environ['MATTERGPT_LOGLEVEL'] = args.loglevel
     os.environ['MATTERGPT_MAX_TOKENS'] = str(args.max_tokens)
