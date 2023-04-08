@@ -240,6 +240,7 @@ def create_app(args):
         retry = True
         while retry:
             try:
+                logging.debug(f"Messages sent: {messages}")
                 # Generate a response using OpenAI API
                 response = OpenAI.ChatCompletion.create(
                     model=args.gpt_model,
