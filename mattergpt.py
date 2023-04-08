@@ -36,6 +36,12 @@ def parse_args():
     parser.add_argument('--mm-scheme', default=os.environ.get('MATTERGPT_MM_SCHEME', 'https'), help='Mattermost server scheme (http or https)')
     parser.add_argument('--webhook-port', type=int, default=os.environ.get('MATTERGPT_WEBHOOK_PORT', 5000), help='Webhook listening port')
     parser.add_argument('--gpt-model', default=os.environ.get('MATTERGPT_GPT_MODEL', 'gpt-3.5-turbo'), help='OpenAI ChatGPT model')
+    parser.add_argument(
+        "--system-message",
+        type=str,
+        default=os.environ.get("MATTERMOST_GPT_SYSTEM_MESSAGE", "You are ChatGPT, a large language model trained by OpenAI."),
+        help="The system message to include at the beginning of the conversation (default: %(default)s)",
+    )
     parser.add_argument('--logfile', default=os.environ.get('MATTERGPT_LOGFILE', None), help='Path to log file (default: stdout)')
     parser.add_argument('--loglevel', default=os.environ.get('MATTERGPT_LOGLEVEL', 'INFO'), help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
     parser.add_argument('--max-tokens', type=int, default=os.environ.get('MATTERGPT_MAX_TOKENS', 1000), help='Maximum tokens for the generated text')
@@ -54,6 +60,7 @@ def parse_args():
     os.environ['MATTERGPT_MM_SCHEME'] = args.mm_scheme
     os.environ['MATTERGPT_WEBHOOK_PORT'] = str(args.webhook_port)
     os.environ['MATTERGPT_GPT_MODEL'] = args.gpt_model
+    os.environ["MATTERMOST_GPT_SYSTEM_MESSAGE"] = args.system_message
     os.environ['MATTERGPT_LOGFILE'] = args.logfile if args.logfile else ''
     os.environ['MATTERGPT_LOGLEVEL'] = args.loglevel
     os.environ['MATTERGPT_MAX_TOKENS'] = str(args.max_tokens)
@@ -217,7 +224,7 @@ def create_app():
 
         # Build the messages list for the API call
         messages = [
-            {"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI."},
+            {"role": "system", "content": args.system_message},
         ]
 
         for (user, msg) in thread_history:
