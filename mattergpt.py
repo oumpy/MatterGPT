@@ -241,6 +241,7 @@ def create_app():
                 retry = False
             except OpenAIError as e:
                 if e.error.get('code') == 'context_length_exceeded':
+                    logging.info(f"Context length exceeded. Retry...")
                     # Remove the oldest message and try again
                     messages.pop(1)
                 else:
