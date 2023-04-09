@@ -52,6 +52,9 @@ def parse_args():
     parser.add_argument('--loglevel', default=os.environ.get('MATTERGPT_LOGLEVEL', 'INFO'), help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
     parser.add_argument('--max-tokens', type=int, default=os.environ.get('MATTERGPT_MAX_TOKENS', 1000), help='Maximum tokens for the generated text')
     parser.add_argument('--temperature', type=float, default=os.environ.get('MATTERGPT_TEMPERATURE', 0.5), help='Temperature for the generated text (higher values make the output more diverse, lower values make it more conservative)')
+    parser.add_argument('--top-p', type=float, default=os.environ.get('MATTERGPT_TOP_P', 1.0), help='The value of top_p for the generated text (float between 0 and 1)')
+    parser.add_argument('--frequency-penalty', type=float, default=os.environ.get('MATTERGPT_FREQUENCY_PENALTY', 0.0), help='The value of frequency_penalty for the generated text (float between -2 and 2)')
+    parser.add_argument('--presence-penalty', type=float, default=os.environ.get('MATTERGPT_PRESENCE_PENALTY', 0.0), help='The value of presence_penalty for the generated text (float between -2 and 2)')
     parser.add_argument('--max-thread-posts', type=int, default=os.environ.get('MATTERGPT_MAX_THREAD_POSTS', 20), help='Maximum number of posts to fetch in a thread')
     parser.add_argument('--max-thread-tokens', type=int, default=os.environ.get('MATTERGPT_MAX_THREAD_TOKENS', 4096), help='Maximum tokens to include from the thread history')
     parser.add_argument('--debug', action='store_true', default=str(os.environ.get('MATTERGPT_DEBUG', 'false')).lower() == 'true', help='Enable debug mode')
@@ -72,6 +75,9 @@ def parse_args():
     os.environ['MATTERGPT_LOGLEVEL'] = args.loglevel
     os.environ['MATTERGPT_MAX_TOKENS'] = str(args.max_tokens)
     os.environ['MATTERGPT_TEMPERATURE'] = str(args.temperature)
+    os.environ['MATTERGPT_TOP_P'] = str(args.top_p)
+    os.environ['MATTERGPT_FREQUENCY_PENALTY'] = str(args.frequency_penalty)
+    os.environ['MATTERGPT_PRESENCE_PENALTY'] = str(args.presence_penalty)
     os.environ['MATTERGPT_MAX_THREAD_POSTS'] = str(args.max_thread_posts)
     os.environ['MATTERGPT_MAX_THREAD_TOKENS'] = str(args.max_thread_tokens)
     os.environ['MATTERGPT_DEBUG'] = str(int(args.debug))
@@ -263,9 +269,9 @@ def create_app(args):
                     messages=messages,
                     max_tokens=args.max_tokens,
                     temperature=args.temperature,
-                    top_p=1,
-                    frequency_penalty=0,
-                    presence_penalty=0,
+                    top_p=args.top_p,
+                    frequency_penalty=args.frequency_penalty,
+                    presence_penalty=args.presence_penalty,
                 )
                 retry = False
             except OpenAIError as e:
