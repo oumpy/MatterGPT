@@ -21,14 +21,6 @@ import openai as OpenAI
 from openai.error import OpenAIError
 
 
-# Load environment variables
-MATTERMOST_OUTGOING_WEBHOOK_TOKEN = os.environ['MATTERMOST_OUTGOING_WEBHOOK_TOKEN']
-MATTERMOST_BOT_TOKEN = os.environ['MATTERMOST_BOT_TOKEN']
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
-
-# Set up OpenAI API
-OpenAI.api_key = OPENAI_API_KEY
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--mm-url', default=os.environ.get('MATTERGPT_MM_URL', 'localhost'), help='Mattermost server URL')
@@ -298,21 +290,30 @@ def create_app(args):
 
     return app
 
+
 if __name__ == "__main__":
     load_dotenv()
-    args = parse_args()
-    configure_logging(args)
-    mm_driver = init_mattermost_driver(args)
-    mm_bot_id = mm_driver.users.get_user('me')['id']
+else:
+    sys.argv = ['mattergpt']
+
+# Load environment variables
+MATTERMOST_OUTGOING_WEBHOOK_TOKEN = os.environ['MATTERMOST_OUTGOING_WEBHOOK_TOKEN']
+MATTERMOST_BOT_TOKEN = os.environ['MATTERMOST_BOT_TOKEN']
+OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
+
+# Set up OpenAI API
+OpenAI.api_key = OPENAI_API_KEY
+
+args = parse_args()
+configure_logging(args)
+mm_driver = init_mattermost_driver(args)
+mm_bot_id = mm_driver.users.get_user('me')['id']
+
+if __name__ == "__main__":
     if args.gunicorn_path:
         subprocess.run([args.gunicorn_path, "--workers", str(args.workers), "--timeout", str(args.timeout), "--bind", f"{args.webhook_host}:{args.webhook_port}", "mattergpt:app"])
     else:
         app = create_app(args)
         app.run(host=args.webhook_host, port=args.webhook_port, debug=args.debug)
 elif __name__ == "mattergpt":
-    sys.argv = ['mattergpt']
-    args = parse_args()
-    configure_logging(args)
-    mm_driver = init_mattermost_driver(args)
-    mm_bot_id = mm_driver.users.get_user('me')['id']
     app = create_app(args)
