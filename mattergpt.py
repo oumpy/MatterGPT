@@ -34,6 +34,7 @@ def parse_args():
     parser.add_argument('--mm-url', default=os.environ.get('MATTERGPT_MM_URL', 'localhost'), help='Mattermost server URL')
     parser.add_argument('--mm-port', type=int, default=os.environ.get('MATTERGPT_MM_PORT', 443), help='Mattermost server port')
     parser.add_argument('--mm-scheme', default=os.environ.get('MATTERGPT_MM_SCHEME', 'https'), help='Mattermost server scheme (http or https)')
+    parser.add_argument('--webhook-host', default=os.environ.get('MATTERGPT_WEBHOOK_HOST', '0.0.0.0'), help='Webhook listening host (default: %(default)s)')
     parser.add_argument('--webhook-port', type=int, default=os.environ.get('MATTERGPT_WEBHOOK_PORT', 5000), help='Webhook listening port')
     parser.add_argument('--gpt-model', default=os.environ.get('MATTERGPT_GPT_MODEL', 'gpt-3.5-turbo'), help='OpenAI ChatGPT model')
     parser.add_argument(
@@ -67,6 +68,7 @@ def parse_args():
     os.environ['MATTERGPT_MM_URL'] = args.mm_url
     os.environ['MATTERGPT_MM_PORT'] = str(args.mm_port)
     os.environ['MATTERGPT_MM_SCHEME'] = args.mm_scheme
+    os.environ['MATTERGPT_WEBHOOK_HOST'] = args.webhook_host
     os.environ['MATTERGPT_WEBHOOK_PORT'] = str(args.webhook_port)
     os.environ['MATTERGPT_GPT_MODEL'] = args.gpt_model
     os.environ["MATTERGPT_SYSTEM_MESSAGE"] = args.system_message
@@ -303,10 +305,10 @@ if __name__ == "__main__":
     mm_driver = init_mattermost_driver(args)
     mm_bot_id = mm_driver.users.get_user('me')['id']
     if args.gunicorn_path:
-        subprocess.run([args.gunicorn_path, "--workers", str(args.workers), "--timeout", str(args.timeout), "--bind", f"0.0.0.0:{args.webhook_port}", "mattergpt:app"])
+        subprocess.run([args.gunicorn_path, "--workers", str(args.workers), "--timeout", str(args.timeout), "--bind", f"{args.webhook_host}:{args.webhook_port}", "mattergpt:app"])
     else:
         app = create_app(args)
-        app.run(host='0.0.0.0', port=args.webhook_port, debug=args.debug)
+        app.run(host=args.webhook_host, port=args.webhook_port, debug=args.debug)
 elif __name__ == "mattergpt":
     sys.argv = ['mattergpt']
     args = parse_args()

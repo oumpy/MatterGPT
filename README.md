@@ -41,6 +41,7 @@ You can use command-line options to change the following settings:
 - `--mm-url`: Mattermost server URL (default: 'localhost')
 - `--mm-port`: Mattermost server port (default: 443)
 - `--mm-scheme`: Mattermost server scheme (default: 'https')
+- `--webhook-host`: Webhook listening host (default: '0.0.0.0')
 - `--webhook-port`: Webhook listening port (default: 5000)
 - `--gpt-model`: OpenAI ChatGPT model (default: 'gpt-3.5-turbo')
 - `--system-message`: The system message to include at the beginning of the conversation (default: 'You are ChatGPT, a large language model trained by OpenAI.')
