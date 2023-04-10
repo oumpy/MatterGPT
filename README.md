@@ -36,32 +36,32 @@ $ python mattergpt.py
 
 ## Options
 
-You can use command-line options to change the following settings:
+You can use command-line options / environment variables, to change the following settings:
 
-- `--mm-url`: Mattermost server URL (default: 'localhost')
-- `--mm-port`: Mattermost server port (default: 443)
-- `--mm-scheme`: Mattermost server scheme (default: 'https')
-- `--webhook-host`: Webhook listening host (default: '0.0.0.0')
-- `--webhook-port`: Webhook listening port (default: 5000)
-- `--gpt-model`: OpenAI ChatGPT model (default: 'gpt-3.5-turbo')
-- `--system-message`: The system message to include at the beginning of the conversation (default: 'You are ChatGPT, a large language model trained by OpenAI.')
-- `--additional-message`: An additional message to include at the beginning of the conversation (default: '')
-- `--logfile`: Path to log file (default: stdout)
-- `--loglevel`: Logging level (default: 'INFO')
-- `--max-tokens`: Maximum tokens for the generated text (default: 1000)
-- `--temperature`: Temperature for the generated text (default: 0.5)
-- `--top-p`: The value of top_p for the generated text (default: 1.0)
-- `--frequency-penalty`: The value of frequency_penalty for the generated text (default: 0.0)
-- `--presence-penalty`: The value of presence_penalty for the generated text (default: 0.0)
-- `--max-thread-posts`: Maximum number of posts to fetch in a thread (0 means unlimited) (default: 0)
-- `--max-thread-tokens`: Maximum tokens to include from the thread history (default: 4096)
-- `--debug`: Enable debug mode
-- `--flush-logs`: Enable immediate flushing of logs
-- `--gunicorn-path`: Path to the Gunicorn executable (if not provided, Flask built-in server will be used)
-- `--workers`: Number of Gunicorn worker processes (only applicable if using Gunicorn; default: 1)
-- `--timeout`: Gunicorn timeout value in seconds (only applicable if using Gunicorn; default: 30)
-
-For more information, run `python mattergpt.py --help`.
+| Option                 | Environment Variable         | Default                 | Description                                                                                                          |
+|------------------------|------------------------------|-------------------------|----------------------------------------------------------------------------------------------------------------------|
+| --mm-url               | MATTERGPT_MM_URL             | localhost               | Mattermost server URL                                                                                                |
+| --mm-port              | MATTERGPT_MM_PORT            | 443                     | Mattermost server port                                                                                               |
+| --mm-scheme            | MATTERGPT_MM_SCHEME          | https                  | Mattermost server scheme (http or https)                                                                             |
+| --webhook-host         | MATTERGPT_WEBHOOK_HOST       | 0.0.0.0                 | Webhook listening host                                                                                               |
+| --webhook-port         | MATTERGPT_WEBHOOK_PORT       | 5000                    | Webhook listening port                                                                                               |
+| --gpt-model            | MATTERGPT_GPT_MODEL          | gpt-3.5-turbo           | OpenAI ChatGPT model                                                                                                 |
+| --system-message       | MATTERGPT_SYSTEM_MESSAGE     | (Default system message)| The system message to include at the beginning of the conversation                                                   |
+| --additional-message   | MATTERGPT_ADDITIONAL_MESSAGE |                         | An additional message to include at the beginning of the conversation                                                 |
+| --logfile              | MATTERGPT_LOGFILE            | (stdout)                | Path to log file                                                                                                     |
+| --loglevel             | MATTERGPT_LOGLEVEL           | INFO                    | Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)                                                                |
+| --max-tokens           | MATTERGPT_MAX_TOKENS         | 1000                    | Maximum tokens for the generated text                                                                                |
+| --temperature          | MATTERGPT_TEMPERATURE        | 0.5                     | Temperature for the generated text (higher values make the output more diverse, lower values make it more conservative) |
+| --top-p                | MATTERGPT_TOP_P              | 1.0                     | The value of top_p for the generated text (float between 0 and 1)                                                     |
+| --frequency-penalty    | MATTERGPT_FREQUENCY_PENALTY  | 0.0                     | The value of frequency_penalty for the generated text (float between -2 and 2)                                        |
+| --presence-penalty     | MATTERGPT_PRESENCE_PENALTY   | 0.0                     | The value of presence_penalty for the generated text (float between -2 and 2)                                         |
+| --max-thread-posts     | MATTERGPT_MAX_THREAD_POSTS   | 0                       | Maximum number of posts to fetch in a thread (0 means unlimited)                                                      |
+| --max-thread-tokens    | MATTERGPT_MAX_THREAD_TOKENS  | 4096                    | Maximum tokens to include from the thread history                                                                    |
+| --debug                | MATTERGPT_DEBUG              | false                   | Enable debug mode                                                                                                    |
+| --flush-logs           | MATTERGPT_FLUSH_LOGS         | false                   | Enable immediate flushing of logs                                                                                    |
+| --gunicorn-path        | MATTERGPT_GUNICORN_PATH      | (Not provided)          | Path to Gunicorn executable (if not provided, Flask built-in server will be used)                                    |
+| --workers              | MATTERGPT_WORKERS            | 1                       | Number of Gunicorn worker processes (only applicable if using Gunicorn)                                               |
+| --timeout              | MATTERGPT_TIMEOUT            | 30                      | Gunicorn timeout value in seconds (only applicable if using Gunicorn)                                                 |
 
 ## Custom Commands
 
