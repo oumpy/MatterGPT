@@ -48,7 +48,7 @@ def parse_args():
     parser.add_argument('--top-p', type=float, default=os.environ.get('MATTERGPT_TOP_P', 1.0), help='The value of top_p for the generated text (float between 0 and 1)')
     parser.add_argument('--frequency-penalty', type=float, default=os.environ.get('MATTERGPT_FREQUENCY_PENALTY', 0.0), help='The value of frequency_penalty for the generated text (float between -2 and 2)')
     parser.add_argument('--presence-penalty', type=float, default=os.environ.get('MATTERGPT_PRESENCE_PENALTY', 0.0), help='The value of presence_penalty for the generated text (float between -2 and 2)')
-    parser.add_argument('--max-thread-posts', type=int, default=os.environ.get('MATTERGPT_MAX_THREAD_POSTS', 20), help='Maximum number of posts to fetch in a thread')
+    parser.add_argument('--max-thread-posts', type=int, default=os.environ.get('MATTERGPT_MAX_THREAD_POSTS', 0), help='Maximum number of posts to fetch in a thread (0 means unlimited)')
     parser.add_argument('--max-thread-tokens', type=int, default=os.environ.get('MATTERGPT_MAX_THREAD_TOKENS', 4096), help='Maximum tokens to include from the thread history')
     parser.add_argument('--debug', action='store_true', default=str(os.environ.get('MATTERGPT_DEBUG', 'false')).lower() == 'true', help='Enable debug mode')
     parser.add_argument('--flush-logs', action='store_true', default=os.environ.get('MATTERGPT_FLUSH_LOGS', 'false').lower() == 'true', help='Enable immediate flushing of logs')

@@ -53,7 +53,7 @@ You can use command-line options to change the following settings:
 - `--top-p`: The value of top_p for the generated text (default: 1.0)
 - `--frequency-penalty`: The value of frequency_penalty for the generated text (default: 0.0)
 - `--presence-penalty`: The value of presence_penalty for the generated text (default: 0.0)
-- `--max-thread-posts`: Maximum number of posts to fetch in a thread (default: 20)
+- `--max-thread-posts`: Maximum number of posts to fetch in a thread (0 means unlimited) (default: 0)
 - `--max-thread-tokens`: Maximum tokens to include from the thread history (default: 4096)
 - `--debug`: Enable debug mode
 - `--flush-logs`: Enable immediate flushing of logs
