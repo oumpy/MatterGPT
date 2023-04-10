@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# MatterGPT 1.0beta1 (2023-03-31)
+# MatterGPT (mattergpt.py) version 1.0.0
 # Entirely written by ChatGPT (ChatGPT-4 based)
 # @2023 AtamaokaC
 # Python Party of Osaka University Medical School, Japan
