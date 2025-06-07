@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify, g
 from mattermostdriver import Driver
 import openai
+from openai import OpenAI, OpenAIError, BadRequestError
 from openai import OpenAIError, APIError, RateLimitError, APITimeoutError, InternalServerError, AuthenticationError
 
 # Initialize OpenAI client with API key after loading .env
@@ -197,8 +198,6 @@ def create_app(args, mm_driver, mm_bot_id):
                     presence_penalty=args.presence_penalty
                 )
                 break
-# FIX NEEDED:             except openai.APIError as e:
-# FIX NEEDED:                 if isinstance(e, openai.BadRequestError) and "context_length_exceeded" in str(e).lower():
                     if len(messages) > 2:
                         messages.pop(1)  # Remove oldest user/assistant message
                     else:
@@ -225,6 +224,7 @@ else:
     sys.argv = ['mattergpt']
 
 args = parse_args()
+client = OpenAI(api_key=args.openai_api_key)
 configure_logging(args)
 
 # removed: api_key no longer set globally = args.openai_api_key
