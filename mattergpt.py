@@ -188,7 +188,28 @@ def create_app(args, mm_driver, mm_bot_id):
         while True:
             try:
                 client = OpenAI(api_key=args.openai_api_key)
+        retry = True
+        while retry:
+            try:
                 response = client.chat.completions.create(
+                    model=args.gpt_model,
+                    messages=messages,
+                    max_tokens=args.max_tokens,
+                    temperature=args.temperature,
+                    top_p=args.top_p,
+                    frequency_penalty=args.frequency_penalty,
+                    presence_penalty=args.presence_penalty
+                )
+                retry = False
+            except openai.BadRequestError as e:
+                if 'context_length_exceeded' in str(e).lower():
+                    logging.info('Context length exceeded. Trimming and retrying...')
+                    if len(messages) > 2:
+                        messages.pop(1)
+                    else:
+                        raise
+                else:
+                    raise
                     model=args.gpt_model,
                     messages=messages,
                     max_tokens=args.max_tokens,
