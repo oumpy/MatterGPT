@@ -1,4 +1,4 @@
-# MatterGPT
+# MatterGPT (version 1.1.0)
 
 MatterGPT is a ChatGPT-based chatbot that works with Mattermost, engaging users in natural conversations, answering questions, and providing information.
 The code (and also this README) for this project was developed entirely by ChatGPT.
@@ -47,8 +47,8 @@ You can use command-line options / environment variables, to change the followin
 | --webhook-port         | MATTERGPT_WEBHOOK_PORT       | 5000                    | Webhook listening port                                                                                               |
 | --outgoing-webhook-token | MATTERGPT_OUTGOING_WEBHOOK_TOKEN | (blank)           | Mattermost outgoing-webhook Token                                                                                                  |
 | --mm-bot-token         | MATTERGPT_MM_BOT_TOKEN       | (blank)                 | Mattermost Bot- Token                                                                                                  |
-| --openai-api-key       | MATTERGPT_API_KEY            | (blank)                 | OpenAI API Key                                                                             |
-| --gpt-model            | MATTERGPT_GPT_MODEL          | gpt-3.5-turbo           | OpenAI ChatGPT model                                                                                                 |
+| --openai-api-key       | MATTERGPT_OPENAI_API_KEY     | (blank)                 | OpenAI API Key                                                                             |
+| --gpt-model            | MATTERGPT_GPT_MODEL          | gpt-4o-mini             | OpenAI ChatGPT model                                                                                                 |
 | --system-message       | MATTERGPT_SYSTEM_MESSAGE     | (Default system message)| The system message to include at the beginning of the conversation                                                   |
 | --additional-message   | MATTERGPT_ADDITIONAL_MESSAGE |                         | An additional message to include at the beginning of the conversation                                                 |
 | --logfile              | MATTERGPT_LOGFILE            | (stdout)                | Path to log file                                                                                                     |
@@ -106,7 +106,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Copyright & License
 
-- @2023 AtamaokaC  
+- @2023-2025 AtamaokaC  
   Python Party of Osaka University Medical School, Japan
 - License: GNU General Public License v3
 
