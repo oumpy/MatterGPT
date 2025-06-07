@@ -115,7 +115,8 @@ def create_app(args, mm_driver, mm_bot_id, client):
         for uid, msg in history:
             role = "user" if uid != mm_bot_id else "assistant"
             if uid != mm_bot_id and args.additional_message:
-                msg += f"{args.additional_message}"
+                msg += f"
+{args.additional_message}"
             messages.append({"role": role, "content": msg})
 
         retry = True
