@@ -175,8 +175,7 @@ def create_app(args, mm_driver, mm_bot_id):
             role = "assistant" if user_id == mm_bot_id else "user"
             messages.append({"role": role, "content": msg})
         if messages and args.additional_message:
-            messages[-1]["content"] += "
-" + args.additional_message
+            messages[-1]["content"] += "\n" + args.additional_message
 
         while True:
             try:
