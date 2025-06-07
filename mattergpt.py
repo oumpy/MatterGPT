@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# MatterGPT (mattergpt.py) version 1.0.1
-# Entirely written and maintained with help from ChatGPT (GPT-4)
+# MatterGPT (mattergpt.py) version 1.1.0
+# Entirely written and maintained with help from ChatGPT (GPT-4o)
 # @2023-2025 AtamaokaC
 # Python Party of Osaka University Medical School, Japan
 # License: GNU General Public License v3
@@ -21,6 +21,7 @@ import openai
 from openai.error import OpenAIError
 
 
+# Parse command-line arguments and set defaults from environment variables
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--openai-api-key', default=os.environ.get('MATTERGPT_OPENAI_API_KEY'), help='OpenAI API key')
@@ -52,12 +53,14 @@ def parse_args():
     return parser.parse_args()
 
 
+# Configure root logger with formatting and output settings
 def configure_logging(args):
     loglevel = getattr(logging, args.loglevel.upper(), logging.INFO)
     stream = open(args.logfile, 'a', encoding='utf-8', buffering=1) if args.logfile else io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', write_through=args.flush_logs)
     logging.basicConfig(stream=stream, level=loglevel, format='[%(asctime)s] %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 
+# Estimate the token count using regular expressions for word-like segments
 def estimate_token_count(text):
     return len(re.findall(r'\w+|\S', text))
 
@@ -81,6 +84,7 @@ def get_thread_history(post_id, max_posts, max_tokens, url, port, scheme, token)
     return list(reversed(history))
 
 
+# Create the Flask app with the webhook route
 def create_app(args, mm_driver, mm_bot_id):
     app = Flask(__name__)
     @app.before_request
