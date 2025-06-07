@@ -51,7 +51,7 @@ def parse_args():
                         help='OpenAI API key')
 
     # ChatGPT and prompt configuration
-    parser.add_argument('--gpt-model', default=os.environ.get('MATTERGPT_GPT_MODEL', 'gpt-3.5-turbo'),
+    parser.add_argument('--gpt-model', default=os.environ.get('MATTERGPT_GPT_MODEL', 'gpt-4o-mini'),
                         help='OpenAI ChatGPT model')
     parser.add_argument('--system-message', default=os.environ.get('MATTERGPT_SYSTEM_MESSAGE',
                                                                     'You are ChatGPT, a large language model trained by OpenAI.'),
