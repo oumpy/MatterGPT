@@ -211,7 +211,7 @@ def create_app(args, mm_driver, mm_bot_id):
                 else:
                     raise e
 
-        reply = response.choices[0].message['content']
+        reply = response.choices[0].message.content
         mm_driver.posts.create_post({
             'channel_id': channel_id,
             'message': reply,
