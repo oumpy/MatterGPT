@@ -156,6 +156,9 @@ def create_app(args, mm_driver, mm_bot_id):
 
     @app.route('/webhook', methods=['POST'])
     def webhook():
+        """Handle incoming webhook events from Mattermost."""
+        logging.debug(f"Webhook received: {request.json}")
+
         data = request.json
         if data.get("token") != args.outgoing_webhook_token:
             return jsonify({'text': 'Invalid token'}), 403
