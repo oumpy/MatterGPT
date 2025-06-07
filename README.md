@@ -14,9 +14,9 @@ The code (and also this README) for this project was developed entirely by ChatG
 1. Create a `.env` file and set the following environment variables:
 
 ```
-MATTERMOST_OUTGOING_WEBHOOK_TOKEN=your_mattermost_outgoing_webhook_token
-MATTERMOST_BOT_TOKEN=your_mattermost_bot_token
-OPENAI_API_KEY=your_openai_api_key
+MATTERGPT_OUTGOING_WEBHOOK_TOKEN=your_mattermost_outgoing_webhook_token
+MATTERGPT_MM_BOT_TOKEN=your_mattermost_bot_token
+MATTERGPT_OPENAI_API_KEY=your_openai_api_key
 ```
 
 You can also set other `MATTERGPT_...` environment variables in the `.env` file to change the default values of the corresponding command-line options. 
@@ -45,6 +45,9 @@ You can use command-line options / environment variables, to change the followin
 | --mm-scheme            | MATTERGPT_MM_SCHEME          | https                  | Mattermost server scheme (http or https)                                                                             |
 | --webhook-host         | MATTERGPT_WEBHOOK_HOST       | 0.0.0.0                 | Webhook listening host                                                                                               |
 | --webhook-port         | MATTERGPT_WEBHOOK_PORT       | 5000                    | Webhook listening port                                                                                               |
+| --outgoing-webhook-token | MATTERGPT_OUTGOING_WEBHOOK_TOKEN | (blank)           | Mattermost outgoing-webhook Token                                                                                                  |
+| --mm-bot-token         | MATTERGPT_MM_BOT_TOKEN       | (blank)                 | Mattermost Bot- Token                                                                                                  |
+| --openai-api-key       | MATTERGPT_API_KEY            | (blank)                 | OpenAI API Key                                                                             |
 | --gpt-model            | MATTERGPT_GPT_MODEL          | gpt-3.5-turbo           | OpenAI ChatGPT model                                                                                                 |
 | --system-message       | MATTERGPT_SYSTEM_MESSAGE     | (Default system message)| The system message to include at the beginning of the conversation                                                   |
 | --additional-message   | MATTERGPT_ADDITIONAL_MESSAGE |                         | An additional message to include at the beginning of the conversation                                                 |
