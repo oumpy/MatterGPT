@@ -185,12 +185,11 @@ def create_app(args, mm_driver, mm_bot_id):
         if messages and args.additional_message:
             messages[-1]["content"] += "\n" + args.additional_message
 
-        while True:
-            try:
-                client = OpenAI(api_key=args.openai_api_key)
+        # Send the request to OpenAI with retry on context_length_exceeded
         retry = True
         while retry:
             try:
+                client = OpenAI(api_key=args.openai_api_key)
                 response = client.chat.completions.create(
                     model=args.gpt_model,
                     messages=messages,
@@ -200,31 +199,17 @@ def create_app(args, mm_driver, mm_bot_id):
                     frequency_penalty=args.frequency_penalty,
                     presence_penalty=args.presence_penalty
                 )
-                retry = False
+                retry = False  # success
             except openai.BadRequestError as e:
-                if 'context_length_exceeded' in str(e).lower():
-                    logging.info('Context length exceeded. Trimming and retrying...')
+                if "context_length_exceeded" in str(e).lower():
+                    logging.info("Context length exceeded. Trimming oldest message and retrying...")
                     if len(messages) > 2:
-                        messages.pop(1)
+                        messages.pop(1)  # Remove oldest user/assistant message (after system message)
                     else:
-                        raise
+                        logging.error("Cannot reduce messages further. Aborting.")
+                        raise e
                 else:
-                    raise
-                    model=args.gpt_model,
-                    messages=messages,
-                    max_tokens=args.max_tokens,
-                    temperature=args.temperature,
-                    top_p=args.top_p,
-                    frequency_penalty=args.frequency_penalty,
-                    presence_penalty=args.presence_penalty
-                )
-                break
-                    if len(messages) > 2:
-                        messages.pop(1)  # Remove oldest user/assistant message
-                    else:
-                        raise
-                else:
-                    raise
+                    raise e
 
         reply = response.choices[0].message['content']
         mm_driver.posts.create_post({
