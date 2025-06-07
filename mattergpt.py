@@ -17,7 +17,7 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, g
 from mattermostdriver import Driver
-import openai
+from openai import OpenAI
 
 # ========================
 # Argument parsing section
