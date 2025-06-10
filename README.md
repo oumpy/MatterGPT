@@ -66,35 +66,6 @@ You can use command-line options / environment variables, to change the followin
 | --workers              | MATTERGPT_WORKERS            | 1                       | Number of Gunicorn worker processes (only applicable if using Gunicorn)                                               |
 | --timeout              | MATTERGPT_TIMEOUT            | 30                      | Gunicorn timeout value in seconds (only applicable if using Gunicorn)                                                 |
 
-## Custom Commands
-
-MatterGPT now supports custom commands that you can define in a separate Python file. 
-Simply create a file named `custom_commands.py` in the same directory as mattergpt.py, and define your custom commands as Python functions. 
-The custom command functions should accept a single argument representing the message text and return a string with the response.
-
-Here's an example of how to create a custom command:
-
-```
-# custom_commands.py
-
-def hello_world(message):
-    return "Hello, world!"
-```
-
-To call this custom command from Mattermost, simply mention the bot and use the command as follows:
-```
-@your_bot_name !hello_world
-```
-
-MatterGPT will automatically detect and execute the custom command, returning the response in the chat.
-
-### Custom Command Guidelines
-
-1. Custom command function names should be lowercase and use underscores to separate words (e.g., my_custom_command).
-2. Custom commands should be defined in the custom_commands.py file in the same directory as mattergpt.py.
-3. Custom command functions should accept a single argument representing the message text and return a string with the response.
-4. To call a custom command from Mattermost, mention the bot and use the command prefixed with an exclamation mark (e.g., @your_bot_name !my_custom_command).
-
 ## systemd Unit File Template
 
 A systemd unit file template named `mattergpt.service` is provided in the repository.
