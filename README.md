@@ -1,4 +1,4 @@
-# MatterGPT (version 1.1.0)
+# MatterGPT (version 1.1.1)
 
 MatterGPT is a ChatGPT-based chatbot that works with Mattermost, engaging users in natural conversations, answering questions, and providing information.
 The code (and also this README) for this project was developed entirely by ChatGPT.
