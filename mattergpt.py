@@ -21,9 +21,6 @@ import openai
 from openai import OpenAI, OpenAIError, BadRequestError
 from openai import OpenAIError, APIError, RateLimitError, APITimeoutError, InternalServerError, AuthenticationError
 
-# Initialize OpenAI client with API key after loading .env
-client = openai.Client(api_key=os.environ['MATTERGPT_OPENAI_API_KEY'])
-
 # ========================
 # Argument parsing section
 # ========================
@@ -233,7 +230,6 @@ args = parse_args()
 client = OpenAI(api_key=args.openai_api_key)
 configure_logging(args)
 
-# removed: api_key no longer set globally = args.openai_api_key
 mm_driver = init_mattermost_driver(args)
 mm_bot_id = mm_driver.users.get_user('me')['id']
 app = create_app(args, mm_driver, mm_bot_id)

@@ -46,7 +46,7 @@ You can use command-line options / environment variables, to change the followin
 | --webhook-host         | MATTERGPT_WEBHOOK_HOST       | 0.0.0.0                 | Webhook listening host                                                                                               |
 | --webhook-port         | MATTERGPT_WEBHOOK_PORT       | 5000                    | Webhook listening port                                                                                               |
 | --outgoing-webhook-token | MATTERGPT_OUTGOING_WEBHOOK_TOKEN | (blank)           | Mattermost outgoing-webhook Token                                                                                                  |
-| --mm-bot-token         | MATTERGPT_MM_BOT_TOKEN       | (blank)                 | Mattermost Bot- Token                                                                                                  |
+| --mm-bot-token         | MATTERGPT_MM_BOT_TOKEN       | (blank)                 | Mattermost Bot-Token                                                                                                  |
 | --openai-api-key       | MATTERGPT_OPENAI_API_KEY     | (blank)                 | OpenAI API Key                                                                             |
 | --gpt-model            | MATTERGPT_GPT_MODEL          | gpt-4o-mini             | OpenAI ChatGPT model                                                                                                 |
 | --system-message       | MATTERGPT_SYSTEM_MESSAGE     | (Default system message)| The system message to include at the beginning of the conversation                                                   |
