@@ -1,4 +1,4 @@
-# MatterGPT (version 1.1.0)
+# MatterGPT (version 1.1.1)
 
 MatterGPT is a ChatGPT-based chatbot that works with Mattermost, engaging users in natural conversations, answering questions, and providing information.
 The code (and also this README) for this project was developed entirely by ChatGPT.
@@ -46,7 +46,7 @@ You can use command-line options / environment variables, to change the followin
 | --webhook-host         | MATTERGPT_WEBHOOK_HOST       | 0.0.0.0                 | Webhook listening host                                                                                               |
 | --webhook-port         | MATTERGPT_WEBHOOK_PORT       | 5000                    | Webhook listening port                                                                                               |
 | --outgoing-webhook-token | MATTERGPT_OUTGOING_WEBHOOK_TOKEN | (blank)           | Mattermost outgoing-webhook Token                                                                                                  |
-| --mm-bot-token         | MATTERGPT_MM_BOT_TOKEN       | (blank)                 | Mattermost Bot- Token                                                                                                  |
+| --mm-bot-token         | MATTERGPT_MM_BOT_TOKEN       | (blank)                 | Mattermost Bot-Token                                                                                                  |
 | --openai-api-key       | MATTERGPT_OPENAI_API_KEY     | (blank)                 | OpenAI API Key                                                                             |
 | --gpt-model            | MATTERGPT_GPT_MODEL          | gpt-4o-mini             | OpenAI ChatGPT model                                                                                                 |
 | --system-message       | MATTERGPT_SYSTEM_MESSAGE     | (Default system message)| The system message to include at the beginning of the conversation                                                   |
@@ -65,35 +65,6 @@ You can use command-line options / environment variables, to change the followin
 | --gunicorn-path        | MATTERGPT_GUNICORN_PATH      | (Not provided)          | Path to Gunicorn executable (if not provided, Flask built-in server will be used)                                    |
 | --workers              | MATTERGPT_WORKERS            | 1                       | Number of Gunicorn worker processes (only applicable if using Gunicorn)                                               |
 | --timeout              | MATTERGPT_TIMEOUT            | 30                      | Gunicorn timeout value in seconds (only applicable if using Gunicorn)                                                 |
-
-## Custom Commands
-
-MatterGPT now supports custom commands that you can define in a separate Python file. 
-Simply create a file named `custom_commands.py` in the same directory as mattergpt.py, and define your custom commands as Python functions. 
-The custom command functions should accept a single argument representing the message text and return a string with the response.
-
-Here's an example of how to create a custom command:
-
-```
-# custom_commands.py
-
-def hello_world(message):
-    return "Hello, world!"
-```
-
-To call this custom command from Mattermost, simply mention the bot and use the command as follows:
-```
-@your_bot_name !hello_world
-```
-
-MatterGPT will automatically detect and execute the custom command, returning the response in the chat.
-
-### Custom Command Guidelines
-
-1. Custom command function names should be lowercase and use underscores to separate words (e.g., my_custom_command).
-2. Custom commands should be defined in the custom_commands.py file in the same directory as mattergpt.py.
-3. Custom command functions should accept a single argument representing the message text and return a string with the response.
-4. To call a custom command from Mattermost, mention the bot and use the command prefixed with an exclamation mark (e.g., @your_bot_name !my_custom_command).
 
 ## systemd Unit File Template
 
